@@ -12,4 +12,5 @@ Install flask
 
 
 ##Startup
-./app.py
+>export FLASK_APP=cacheSim.py
+>flask run

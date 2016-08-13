@@ -11,4 +11,4 @@ install_manifest.txt
 .DS_store
 *.sublime*
 build
-public/c
+__pycache__
