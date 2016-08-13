@@ -2,6 +2,7 @@
 
 Install python3 and pip3
 > sudo apt-get install python3
+
 > curl -sS https://bootstrap.pypa.io/get-pip.py | sudo -H python3
 
 Install clang-format
@@ -13,4 +14,5 @@ Install flask
 
 ##Startup
 >export FLASK_APP=cacheSim.py
+
 >flask run
