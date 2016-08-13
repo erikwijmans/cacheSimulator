@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask
-from flask import url_for, redirect, render_template, request
+from flask import Flask, url_for, redirect, request
 from backend.trace import Tracer
 from backend.csim import CSim
 from json import dumps
