@@ -33,7 +33,7 @@
 
 #content {
   display: flex;
-  flex-flow: column no-wrap;
+  flex-flow: row;
   justify-content: space-around;
 }
 
@@ -46,4 +46,17 @@
   overflow: scroll;
   border: 4px solid #000000;
   padding: 10px;
+}
+
+.trace {
+  display: flex;
+  flex-flow: column;
+  padding: 10px;
+}
+
+.row {
+  margin-top: 1px;
+  padding-top: 1px;
+  margin-bottom: 1px;
+  padding-bottom: 1px;
 }

@@ -2,8 +2,6 @@
 
 import re, sys, subprocess, shlex, glob
 from random import randint, seed
-from csim import CSim
-from json import dumps
 
 array_finder = re.compile("[\[\]]+", re.IGNORECASE)
 struct_dec_finder = re.compile("struct[\d\D]*{", re.IGNORECASE)
@@ -49,10 +47,11 @@ class Tracer:
   def __init__(self, source):
     seed()
     self.fileno = randint(0, sys.maxsize)
-    self.__check_syntax(source)
+    if not self.__check_syntax(source):
+      return
 
     source = self.__frmt(source)
-    print(source)
+
 
     source_code = source.split(";")
     source_code = handle_struct(source_code)
@@ -83,21 +82,19 @@ class Tracer:
       source_code[i] = line
 
 
-    source = '''#include "ArrayTracer.hpp"
+    source = '''#include "backend/ArrayTracer.hpp"
 int main(int argc, char** argv) {''' \
       + ";".join(source_code) + '''  return 0;
 }'''
-
-    print(source)
 
     with open("{}.cpp".format(self.fileno), "w") as file:
       file.write(source)
       file.close()
 
-    subprocess.call(shlex.split("g++ -std=gnu++14 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
+    subprocess.check_call(shlex.split("g++ -std=gnu++14 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
 
     with open("{}.trace".format(self.fileno), "w") as outfile:
-      subprocess.call(shlex.split("./{}".format(self.fileno)), stdout=outfile)
+      subprocess.check_call(shlex.split("./{}".format(self.fileno)), stdout=outfile)
 
     with open("{}.trace".format(self.fileno)) as file:
       self.trace = [l for l in file.read().split("\n") if len(l) > 0]
@@ -105,7 +102,7 @@ int main(int argc, char** argv) {''' \
     self.__clean()
 
   def __clean(self):
-    subprocess.call(shlex.split("rm -rf") + glob.glob("{}*".format(self.fileno)))
+    subprocess.check_call(shlex.split("rm -rf") + glob.glob("{}*".format(self.fileno)))
 
   def get_trace(self):
     return self.trace
@@ -124,46 +121,17 @@ int main(int argc, char** argv) {''' \
       with open("{}.err".format(self.fileno), "r") as file:
         msg = file.read()
         self.__clean()
-        raise RuntimeError(msg)
+        self.trace = msg
+
+    return exit == 0
 
   def __frmt(self, code):
     with open("{}.cpp".format(self.fileno), "w") as file:
       file.write(code)
       file.close()
     with open("{}.frmt".format(self.fileno), "w") as file:
-      subprocess.call(shlex.split("clang-format {}.cpp".format(self.fileno)), stdout=file)
+      subprocess.check_call(shlex.split("clang-format {}.cpp".format(self.fileno)), stdout=file)
 
     with open("{}.frmt".format(self.fileno), "r") as file:
       return file.read()
 
-def main():
-  try:
-    tmp = Tracer("""
-struct pixel_t{
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-    unsigned char a;
-};
-
-struct pixel_t pixel[16][16];
-register int i, j;
-int x;
-for (i = 0; i < 16; i ++){
-    for (j = 0; j < 16; j ++){
-        x = pixel[j][i].r;
-        pixel[j][i].g = 0;
-        pixel[j][i].b = 0;
-        pixel[j][i].a = 0;
-} }
-  """)
-  except RuntimeError as e:
-    print(e)
-    return
-
-  # sim = CSim(4, 1, 3, 64, tmp.get_trace())
-  sim = CSim(3, 4, 2, 64, tmp.get_trace())
-  print(sim.get_res()['miss_rate'])
-
-if __name__ == '__main__':
-  main()
