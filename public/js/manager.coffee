@@ -29,18 +29,8 @@ class Manager
           false
         else true
 
-      i = parseInt Math.random()*15 + 5
-      j = parseInt Math.random()*15 + 5
-      loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
-      index = parseInt Math.random()*2
-      @codeHome.val """#{['char', 'short', 'int', 'long'][parseInt Math.random() * 5]} array[#{i}][#{j}];
-
-#{loops[Math.abs(index - 1)]} {
-  #{loops[index]} {
-    array[i][j] = 15;
-  }
-}"""
-
+    problem = Generator.easy()
+    @codeHome.val problem.code
 
     @traceHome = $ "<textarea rows='20' cols='50'/>"
       .attr 'placeholder', "Trace goes here (will be automatically filled if code is traced)"
@@ -79,7 +69,7 @@ class Manager
             log: @logHome
             summary: @summaryHome
 
-    @simManager = new SimManager @cacheHome, simbtn
+    @simManager = new SimManager @cacheHome, simbtn, problem
 
 
 $ ->

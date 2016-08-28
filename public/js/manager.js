@@ -4,7 +4,7 @@
 
   Manager = (function() {
     function Manager() {
-      var div1, i, index, j, loops, simbtn;
+      var div1, problem, simbtn;
       div1 = $("<div class='trace'/>").appendTo('#content');
       this.cacheHome = $("<div class='container cache'/>").appendTo($('#content'));
       this.logHome = $('<p class="log"/>').appendTo($('#content'));
@@ -25,11 +25,8 @@
           return true;
         }
       });
-      i = parseInt(Math.random() * 15 + 5);
-      j = parseInt(Math.random() * 15 + 5);
-      loops = ["for (int i = 0; i < " + i + "; ++i)", "for (int j = 0; j < " + j + "; ++j)"];
-      index = parseInt(Math.random() * 2);
-      this.codeHome.val(['char', 'short', 'int', 'long'][parseInt(Math.random() * 5)] + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}");
+      problem = Generator.easy();
+      this.codeHome.val(problem.code);
       this.traceHome = $("<textarea rows='20' cols='50'/>").attr('placeholder', "Trace goes here (will be automatically filled if code is traced)");
       this.simulator = null;
       $("<button class='btn'/>").text("Trace").appendTo(div1).click((function(_this) {
@@ -42,10 +39,10 @@
             msg = res['msg'];
             if (!error) {
               return _this.traceHome.text(((function() {
-                var k, len, results;
+                var i, len, results;
                 results = [];
-                for (k = 0, len = msg.length; k < len; k++) {
-                  t = msg[k];
+                for (i = 0, len = msg.length; i < len; i++) {
+                  t = msg[i];
                   results.push("0x" + t);
                 }
                 return results;
@@ -75,7 +72,7 @@
           });
         };
       })(this));
-      this.simManager = new SimManager(this.cacheHome, simbtn);
+      this.simManager = new SimManager(this.cacheHome, simbtn, problem);
     }
 
     return Manager;

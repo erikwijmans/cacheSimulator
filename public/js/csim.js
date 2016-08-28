@@ -200,7 +200,7 @@
   };
 
   root.SimManager = SimManager = (function() {
-    function SimManager(home, simbtn) {
+    function SimManager(home, simbtn, params) {
       var inputDiv, nameDiv;
       this.home = home;
       this.simbtn = simbtn;
@@ -211,9 +211,9 @@
       $("<div class='col-md-3'/>").text("Memory Size").appendTo(nameDiv);
       inputDiv = $("<div class='row'/>").appendTo(this.home);
       this.checkDir = {};
-      this.createCheckedInput('s', 1 << parseInt(Math.random() * 4 + 1), inputDiv);
-      this.createCheckedInput('b', 1 << parseInt(Math.random() * 4 + 1), inputDiv);
-      $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='number' id='E'/>").val(parseInt(Math.random() * 6 + 1)).attr("style", "width: 100%;"));
+      this.createCheckedInput('s', params.s, inputDiv);
+      this.createCheckedInput('b', params.b, inputDiv);
+      $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='number' id='E'/>").val(params.E).attr("style", "width: 100%;"));
       $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='number' id='memSize'/>").val("64").attr("style", "width: 100%;"));
     }
 
@@ -224,6 +224,12 @@
         E: parseInt($("#E").val()),
         memSize: parseInt($("#memSize").val())
       };
+    };
+
+    SimManager.prototype.setParams = function(p) {
+      $("#s").val(p.s);
+      $("#b").val(p.b);
+      return $("#E").val(p.E);
     };
 
     SimManager.prototype.createCheckedInput = function(id, initialVal, parent) {

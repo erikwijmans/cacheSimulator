@@ -193,7 +193,7 @@ powOf2Checker = (num) ->
 
 
 root.SimManager = class SimManager
-  constructor: (@home, @simbtn) ->
+  constructor: (@home, @simbtn, params) ->
     nameDiv = $ "<div class='row'/>"
       .appendTo @home
 
@@ -217,14 +217,14 @@ root.SimManager = class SimManager
       .appendTo @home
 
     @checkDir = {}
-    @createCheckedInput 's', 1 << parseInt(Math.random()*4 + 1), inputDiv
-    @createCheckedInput 'b', 1 << parseInt(Math.random()*4 + 1), inputDiv
+    @createCheckedInput 's', params.s, inputDiv
+    @createCheckedInput 'b', params.b, inputDiv
 
 
     $ "<div class='col-md-3'/>"
       .appendTo inputDiv
       .append($ "<input type='number' id='E'/>"
-        .val parseInt Math.random()*6 + 1
+        .val params.E
         .attr "style", "width: 100%;"
         )
 
@@ -241,7 +241,10 @@ root.SimManager = class SimManager
     E: parseInt($("#E").val())
     memSize: parseInt($("#memSize").val())
 
-
+  setParams: (p) ->
+    $("#s").val p.s
+    $("#b").val p.b
+    $("#E").val p.E
 
   createCheckedInput: (id, initialVal, parent) ->
     $ "<div class='col-md-3'/>"
