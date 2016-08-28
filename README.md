@@ -8,11 +8,18 @@ Install python3 and pip3
 Install clang-format
 > sudo apt-get install clang-format
 
+Install virtualenv
+> sudo -H pip install virtualenv
+
+Set-up virtualenv
+> virtualenv -p python3 virtenv-cache
+> source virtenv-cache/bin/activate
+
+
 Install flask
-> sudo -H pip3 install flask
+> sudo -H pip install flask
 
 
 ##Startup
->export FLASK_APP=cacheSim.py
 
->flask run
+>env FLASK_APP=cacheSim.py flask run
