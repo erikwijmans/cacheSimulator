@@ -5,19 +5,19 @@ from backend.trace import Tracer
 from backend.csim import CSim
 from json import dumps
 
-application = Flask(__name__, static_url_path='')
+app = Flask(__name__, static_url_path='')
 
-@application.route("/")
+@app.route("/")
 def index():
   return redirect(url_for('static', filename='index.html'))
 
-@application.route("/trace", methods=['POST'])
+@app.route("/trace", methods=['POST'])
 def trace():
   code = request.json
   tracer = Tracer(code)
   return dumps(tracer.get_res())
 
-@application.route("/simulate", methods=['POST'])
+@app.route("/simulate", methods=['POST'])
 def simulate():
   req = request.json
   sim = CSim(req['s'], req['E'], req['b'], req['memSize'], req['trace'])
@@ -26,5 +26,5 @@ def simulate():
 
 
 if __name__ == '__main__':
-  application.debug = True
-  application.run()
+  app.debug = True
+  app.run()
