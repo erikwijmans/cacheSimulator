@@ -13,6 +13,7 @@ Install virtualenv
 
 Set-up virtualenv
 > virtualenv -p python3 virtenv-cache
+
 > source virtenv-cache/bin/activate
 
 
@@ -22,4 +23,4 @@ Install flask
 
 ##Startup
 
->env FLASK_APP=cacheSim.py flask run
+> env FLASK_APP=cacheSim.py flask run
