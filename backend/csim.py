@@ -53,7 +53,7 @@ class CSim:
       'trace':self.res,
       'hits': self.hits,
       'misses': self.misses,
-      'miss_rate': float(self.misses)/(self.hits + self.misses)
+      'miss_rate': "{:1.3f}".format(float(self.misses)/(self.hits + self.misses))
     }
 
   def simulate(self, line):
@@ -90,7 +90,6 @@ class CSim:
     self.mem[block]['u'] = self.time
     self.mem[block]['tag'] = tag
     self.__post_res(address, block, tag, set_index, ACC_TYPE.evict)
-
 
 
 if __name__ == '__main__':

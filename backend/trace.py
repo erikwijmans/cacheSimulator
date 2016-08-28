@@ -1,6 +1,6 @@
 #/usr/bin/env python3
 
-import re, sys, subprocess, shlex, glob
+import re, sys, subprocess, shlex, glob, requests
 from random import randint, seed
 
 array_finder = re.compile("[\[\]]+", re.IGNORECASE)
@@ -45,6 +45,11 @@ def handle_struct(source_code):
 
 class Tracer:
   def __init__(self, source):
+    self.error = False
+    self.prefix = ""
+    if __name__ != "__main__":
+      self.prefix = "/".join((__name__.split(".")[:-1])) + "/"
+
     seed()
     self.fileno = randint(0, sys.maxsize)
     if not self.__check_syntax(source):
@@ -82,7 +87,7 @@ class Tracer:
       source_code[i] = line
 
 
-    source = '''#include "backend/ArrayTracer.hpp"
+    source = '''#include "''' + self.prefix + '''ArrayTracer.hpp"
 int main(int argc, char** argv) {''' \
       + ";".join(source_code) + '''  return 0;
 }'''
@@ -96,6 +101,7 @@ int main(int argc, char** argv) {''' \
     with open("{}.trace".format(self.fileno), "w") as outfile:
       subprocess.check_call(shlex.split("./{}".format(self.fileno)), stdout=outfile)
 
+
     with open("{}.trace".format(self.fileno)) as file:
       self.trace = [l for l in file.read().split("\n") if len(l) > 0]
 
@@ -104,24 +110,28 @@ int main(int argc, char** argv) {''' \
   def __clean(self):
     subprocess.check_call(shlex.split("rm -rf") + glob.glob("{}*".format(self.fileno)))
 
-  def get_trace(self):
-    return self.trace
+  def get_res(self):
+    return {
+      'error': self.error,
+      'msg': self.trace
+    }
 
   def __check_syntax(self, code):
-    source = "int main() {" + code + " return 0; }"
+    source = "int main() {" + code + " return 0;}"
     source = self.__frmt(source)
     with open("{}.c".format(self.fileno), "w") as file:
       file.write(source)
       file.close()
 
     with open("{}.err".format(self.fileno), "w") as file:
-      exit = subprocess.call(shlex.split("gcc -fsyntax-only {}.c".format(self.fileno)), stderr=file)
+      exit = subprocess.call(shlex.split("gcc -fsyntax-only -Wall {}.c".format(self.fileno)), stderr=file)
 
     if exit != 0:
       with open("{}.err".format(self.fileno), "r") as file:
         msg = file.read()
         self.__clean()
-        self.trace = msg
+        self.trace = msg.replace(str(self.fileno), "input")
+        self.error = True
 
     return exit == 0
 
@@ -129,9 +139,28 @@ int main(int argc, char** argv) {''' \
     with open("{}.cpp".format(self.fileno), "w") as file:
       file.write(code)
       file.close()
+
     with open("{}.frmt".format(self.fileno), "w") as file:
       subprocess.check_call(shlex.split("clang-format {}.cpp".format(self.fileno)), stdout=file)
 
     with open("{}.frmt".format(self.fileno), "r") as file:
       return file.read()
 
+if __name__ == '__main__':
+  t = Tracer("""struct pixel_t{
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char a;
+};
+
+struct pixel_t pixel[16][16];
+register int i, j;
+int x;
+for (i = 0; i < 16; i ++){
+    for (j = 0; j < 16; j ++){
+        x = pixel[j][i].r;
+        pixel[j][i].g = 0;
+        pixel[j][i].b = 0;
+        pixel[j][i].a = 0;
+} }""")

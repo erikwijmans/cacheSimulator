@@ -11,6 +11,9 @@
 class MemoryTracer {
 public:
   void getFrame(size_t ad) {
+    if (arrayEnded)
+      return;
+
     if (newArray) {
       current0 = ad;
       newArray = false;
@@ -20,7 +23,11 @@ public:
   };
 
   void postAccess(size_t ad) {
+    if (!acAuth)
+      return;
+
     accesses.push_back(addressToOffset.find(ad)->second);
+    acAuth = false;
   };
 
   ~MemoryTracer() {
@@ -33,13 +40,19 @@ public:
     newArray = true;
     offset += oldSize;
     oldSize = size;
-  }
+    arrayEnded = false;
+  };
+
+  void endArray() { arrayEnded = true; };
+
+  void authAc() { acAuth = true; }
 
 private:
   std::vector<size_t> accesses;
   size_t offset = 0;
   std::unordered_map<size_t, size_t> addressToOffset;
-  bool newArray;
+  bool newArray = false, arrayEnded = true, acAuth = false;
+  ;
   size_t oldSize = 0;
   size_t current0 = 0;
 };
@@ -52,7 +65,6 @@ public:
   TracedArray(Targs... args) : num_args{sizeof...(Targs)} {
     _constructorHelper(args...);
 
-    size = sizeof(A);
     for (auto &d : dimensions)
       size *= d;
 
@@ -70,6 +82,8 @@ public:
     if (std::is_fundamental<A>())
       for (size_t i = 0; i < size / sizeof(A); ++i)
         __memTracer.getFrame((size_t)(array + i));
+
+    __memTracer.endArray();
   };
 
   template <typename... Targs> A &operator()(Targs... args) {
@@ -77,6 +91,8 @@ public:
            sizeof...(Targs) == num_args);
 
     size_t offset = _accHelper(0, args...);
+
+    __memTracer.authAc();
     if (std::is_fundamental<A>())
       __memTracer.postAccess((size_t)(array + offset));
 
@@ -87,7 +103,7 @@ public:
 
 private:
   const int num_args;
-  size_t size;
+  size_t size = sizeof(A);
   std::vector<int> dimensions;
   std::vector<size_t> factors;
   A *array;

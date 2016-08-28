@@ -89,7 +89,7 @@ root.CSim = class CSim
       inner = $ "<div class='row col-md-10'/>"
         .appendTo row
       for _ in [0...@E]
-        block = $ "<p class='block'/>"
+        block = $ "<p class='block empty'/>"
           .text '-1'
           .appendTo(
             $ "<div class='col-md-3'/>"
@@ -118,7 +118,7 @@ root.CSim = class CSim
         @out.push "Address: 0x#{address.toString 16}  Tag: 0x#{tag.toString 16}  Set: #{set}  #{nameMap[accType]}"
 
 
-      newState = (s for s in @states[@states.length - 1])
+      newState = @states[@states.length - 1][..]
       newState[block] =
         tag: tag
         type: accType
@@ -127,14 +127,17 @@ root.CSim = class CSim
 
   print: ->
     if @log?
-      @log.html "<br>#{@out[0..@currentIndex].reverse().join("<br><br>")}"
+      text = "#{@out[1..@currentIndex].join("<br><br>")}<br>"
+      console.log text
+      @log.html text
+      @log.scrollTop @log[0].scrollHeight
 
     for b, i in @states[@currentIndex]
-      @cache[i].removeClass "hit miss evict"
+      @cache[i].removeClass "hit miss evict empty"
       @cache[i].text if b.tag != -1 then "0x#{b.tag.toString 16}" else b.tag
       switch b.type
         when 0
-          break
+          @cache[i].addClass "empty"
         when AccessType.hit
           @cache[i].addClass "hit"
         when AccessType.miss
@@ -166,7 +169,7 @@ root.CSim = class CSim
     @currentIndex + 1 < @states.length
 
   hasPrev: ->
-    @currentIndex >= 0
+    @currentIndex > 0
 
   destroy: ->
     @home.remove()
@@ -176,17 +179,30 @@ root.CSim = class CSim
 
     clearInterval @intervalID
 
+
+STATUS = Object.freeze
+  powOf2: 0
+  nonPowOf2: 1
+  nan: 2
+
+powOf2Checker = (num) ->
+  if isNaN(num)
+    STATUS.nan
+  else
+    if (num | (num - 1)) is (num + num - 1) then STATUS.powOf2 else STATUS.nonPowOf2
+
+
 root.SimManager = class SimManager
-  constructor: (@home) ->
+  constructor: (@home, @simbtn) ->
     nameDiv = $ "<div class='row'/>"
       .appendTo @home
 
     $ "<div class='col-md-3'/>"
-      .text "Set bits"
+      .text "Number of Sets"
       .appendTo nameDiv
 
     $ "<div class='col-md-3'/>"
-      .text "Block bits"
+      .text "Bytes per Block"
       .appendTo nameDiv
 
     $ "<div class='col-md-3'/>"
@@ -200,36 +216,85 @@ root.SimManager = class SimManager
     inputDiv = $ "<div class='row'/>"
       .appendTo @home
 
+    @checkDir = {}
+    @createCheckedInput 's', 1 << parseInt(Math.random()*4 + 1), inputDiv
+    @createCheckedInput 'b', 1 << parseInt(Math.random()*4 + 1), inputDiv
+
+
     $ "<div class='col-md-3'/>"
-      .appendTo nameDiv
-      .append($ "<input type='text' id='s'/>"
-        .attr "value", "3"
+      .appendTo inputDiv
+      .append($ "<input type='number' id='E'/>"
+        .val parseInt Math.random()*6 + 1
         .attr "style", "width: 100%;"
         )
 
     $ "<div class='col-md-3'/>"
-      .appendTo nameDiv
-      .append($ "<input type='text' id='b'/>"
-        .attr "value", "3"
-        .attr "style", "width: 100%;"
-        )
-
-    $ "<div class='col-md-3'/>"
-      .appendTo nameDiv
-      .append($ "<input type='text' id='E'/>"
-        .attr "value", "3"
-        .attr "style", "width: 100%;"
-        )
-
-    $ "<div class='col-md-3'/>"
-      .appendTo nameDiv
-      .append($ "<input type='text' id='memSize'/>"
-        .attr "value", "64"
+      .appendTo inputDiv
+      .append($ "<input type='number' id='memSize'/>"
+        .val "64"
         .attr "style", "width: 100%;"
         )
 
   getParams: ->
-    s: parseInt($("#s").val())
-    b: parseInt($("#b").val())
+    s: parseInt Math.log($("#s").val()) / Math.log(2)
+    b: parseInt Math.log($("#b").val()) / Math.log(2)
     E: parseInt($("#E").val())
     memSize: parseInt($("#memSize").val())
+
+
+
+  createCheckedInput: (id, initialVal, parent) ->
+    $ "<div class='col-md-3'/>"
+        .appendTo parent
+        .append($ "<input type='number' id='#{id}'
+                  data-toggle='tooltip'
+                  data-placement='auto'
+                  data-trigger='manual'
+                  />"
+          .tooltip()
+          .val initialVal
+          .attr "style", "width: 100%;"
+          .on 'input', () =>
+            @checkInput id
+          )
+
+    @checkDir[id] = true
+
+
+  checkInput: (id) ->
+    val = parseInt($("##{id}").val())
+    stat = powOf2Checker val
+
+    switch stat
+      when STATUS.powOf2
+        $("##{id}").tooltip 'hide'
+
+        @checkDir[id] = true
+      when STATUS.nonPowOf2
+        $ "##{id}"
+          .attr 'data-original-title', 'Must be a power of 2'
+          .tooltip 'fixTitle'
+          .tooltip 'show'
+
+        @checkDir[id] = false
+      when STATUS.nan
+        $ "##{id}"
+          .attr 'data-original-title', 'Must be a number'
+          .tooltip 'fixTitle'
+          .tooltip 'show'
+
+        @checkDir[id] = false
+      else
+        console.log "STATUS of #{stat} is unsupported"
+
+    isAllTrue = true
+    for own _, val of @checkDir
+      if not val
+        isAllTrue = false
+        break
+
+
+    if isAllTrue
+      @simbtn.removeClass 'disabled'
+    else
+     @simbtn.addClass 'disabled'

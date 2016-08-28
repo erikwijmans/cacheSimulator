@@ -12,3 +12,9 @@ install_manifest.txt
 *.sublime*
 build
 __pycache__
+virtenv*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

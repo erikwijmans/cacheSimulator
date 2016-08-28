@@ -15,7 +15,7 @@ def index():
 def trace():
   code = request.json
   tracer = Tracer(code)
-  return dumps(tracer.get_trace())
+  return dumps(tracer.get_res())
 
 @app.route("/simulate", methods=['POST'])
 def simulate():
