@@ -52,7 +52,6 @@ private:
   size_t offset = 0;
   std::unordered_map<size_t, size_t> addressToOffset;
   bool newArray = false, arrayEnded = true, acAuth = false;
-  ;
   size_t oldSize = 0;
   size_t current0 = 0;
 };
