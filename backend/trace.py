@@ -96,7 +96,7 @@ int main(int argc, char** argv) {''' \
       file.write(source)
       file.close()
 
-    subprocess.check_call(shlex.split("g++ -std=gnu++14 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
+    subprocess.check_call(shlex.split("g++ -std=gnu++11 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
 
     with open("{}.trace".format(self.fileno), "w") as outfile:
       subprocess.check_call(shlex.split("./{}".format(self.fileno)), stdout=outfile)
@@ -164,3 +164,5 @@ for (i = 0; i < 16; i ++){
         pixel[j][i].b = 0;
         pixel[j][i].a = 0;
 } }""")
+
+  print(t.get_res())
