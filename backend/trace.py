@@ -1,6 +1,6 @@
 #/usr/bin/env python3
 
-import re, sys, subprocess, shlex, glob, requests
+import re, sys, subprocess, shlex, glob
 from random import randint, seed
 
 array_finder = re.compile("[\[\]]+", re.IGNORECASE)
@@ -44,12 +44,14 @@ def handle_struct(source_code):
   return out
 
 class Tracer:
-  def __init__(self, source, prefix=""):
+  def __init__(self, source, working_dir="."):
     self.error = False
-    self.prefix = prefix
+    self.prefix = ""
+    if __name__ != "__main__":
+      self.prefix = "/".join((__name__.split(".")[:-1])) + "/"
 
     seed()
-    self.fileno = randint(0, sys.maxsize)
+    self.fileno = "{}/{}".format(working_dir, randint(0, sys.maxsize))
     if not self.__check_syntax(source):
       return
 
@@ -97,7 +99,7 @@ int main(int argc, char** argv) {''' \
     subprocess.check_call(shlex.split("g++ -std=gnu++11 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
 
     with open("{}.trace".format(self.fileno), "w") as outfile:
-      subprocess.check_call(shlex.split("./{}".format(self.fileno)), stdout=outfile)
+      subprocess.check_call(shlex.split("{}".format(self.fileno)), stdout=outfile)
 
 
     with open("{}.trace".format(self.fileno)) as file:
