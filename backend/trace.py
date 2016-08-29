@@ -44,11 +44,9 @@ def handle_struct(source_code):
   return out
 
 class Tracer:
-  def __init__(self, source):
+  def __init__(self, source, prefix=""):
     self.error = False
-    self.prefix = ""
-    if __name__ != "__main__":
-      self.prefix = "/".join((__name__.split(".")[:-1])) + "/"
+    self.prefix = prefix
 
     seed()
     self.fileno = randint(0, sys.maxsize)
