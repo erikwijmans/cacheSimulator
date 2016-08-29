@@ -181,7 +181,7 @@ root.CSim = class CSim
 
 
 STATUS = Object.freeze
-  powOf2: 0
+  OK: 0
   nonPowOf2: 1
   nan: 2
 
@@ -189,7 +189,7 @@ powOf2Checker = (num) ->
   if isNaN(num)
     STATUS.nan
   else
-    if (num | (num - 1)) is (num + num - 1) then STATUS.powOf2 else STATUS.nonPowOf2
+    if (num | (num - 1)) is (num + num - 1) then STATUS.OK else STATUS.nonPowOf2
 
 
 root.SimManager = class SimManager
@@ -216,17 +216,14 @@ root.SimManager = class SimManager
     inputDiv = $ "<div class='row'/>"
       .appendTo @home
 
+    params = params ? {}
+
     @checkDir = {}
-    @createCheckedInput 's', params.s, inputDiv
-    @createCheckedInput 'b', params.b, inputDiv
+    @createCheckedInput 's', params['s'], inputDiv, powOf2Checker
+    @createCheckedInput 'b', params['b'], inputDiv, powOf2Checker
+    @createCheckedInput 'E', params['E'], inputDiv, (val) ->
+      if isNaN(val) then STATUS.nan else STATUS.OK
 
-
-    $ "<div class='col-md-3'/>"
-      .appendTo inputDiv
-      .append($ "<input type='number' id='E'/>"
-        .val params.E
-        .attr "style", "width: 100%;"
-        )
 
     $ "<div class='col-md-3'/>"
       .appendTo inputDiv
@@ -242,11 +239,17 @@ root.SimManager = class SimManager
     memSize: parseInt($("#memSize").val())
 
   setParams: (p) ->
-    $("#s").val p.s
-    $("#b").val p.b
-    $("#E").val p.E
+    $ "#s"
+      .val p.s
+      .trigger "change"
+    $ "#b"
+      .val p.b
+      .trigger "change"
+    $ "#E"
+      .val p.E
+      .trigger "change"
 
-  createCheckedInput: (id, initialVal, parent) ->
+  createCheckedInput: (id, initialVal, parent, checker) ->
     $ "<div class='col-md-3'/>"
         .appendTo parent
         .append($ "<input type='number' id='#{id}'
@@ -257,19 +260,18 @@ root.SimManager = class SimManager
           .tooltip()
           .val initialVal
           .attr "style", "width: 100%;"
-          .on 'input', () =>
-            @checkInput id
+          .on 'input change', () =>
+            @checkInput id, checker
+          .trigger "change"
           )
 
-    @checkDir[id] = true
 
-
-  checkInput: (id) ->
-    val = parseInt($("##{id}").val())
-    stat = powOf2Checker val
+  checkInput: (id, checker) ->
+    val = parseInt $("##{id}").val()
+    stat =  checker val
 
     switch stat
-      when STATUS.powOf2
+      when STATUS.OK
         $("##{id}").tooltip 'hide'
 
         @checkDir[id] = true

@@ -4,7 +4,7 @@ $ ->
 
       div1 = $ "<div class='trace'/>"
         .appendTo '#content'
-      @cacheHome = $ "<div class='container cache'/>"
+      @cacheHome = $ "<div class='cache'/>"
         .appendTo $ '#content'
 
 
@@ -13,11 +13,33 @@ $ ->
       @summaryHome = $ "<p class='log'/>"
         .appendTo $ '#content'
 
-      $ "<button class='btn'>"
+      $ "<select class='selectpicker'
+        data-width='fit'
+        id='difficulty'>
+          <optgroup label='Problem Difficulty'>
+            <option>Basic</option>
+            <option>Easy</option>
+            <option>Medium</option>
+          </optgroup>
+        </select>"
+        .appendTo div1
+
+      $ "<button class='btn' id='gen'>"
         .text "Generate Random Problem"
         .appendTo div1
         .click () =>
-          problem = Generator.easy()
+          difficulty = $("#difficulty").val().toLowerCase()
+          console.log difficulty
+          switch difficulty
+            when "basic"
+              problem = Generator.basic()
+            when "easy"
+              problem = Generator.easy()
+            when "medium"
+              problem = Generator.medium()
+            else
+              console.log "Unsupported type: #{difficulty}"
+
           @codeHome.val problem.code
           @simManager.setParams problem
 
@@ -39,16 +61,14 @@ $ ->
             false
           else true
 
-      problem = Generator.easy()
-      @codeHome.val problem.code
+
 
       @traceHome = $ "<textarea rows='20' cols='50'/>"
         .attr 'placeholder', "Trace goes here (will be automatically filled if code is traced)"
       @simulator = null
 
-
       $ "<button class='btn'/>"
-        .text "Trace"
+        .text "Trace Code"
         .appendTo div1
         .click () =>
           code = @codeHome.val()
@@ -79,6 +99,27 @@ $ ->
               log: @logHome
               summary: @summaryHome
 
-      @simManager = new SimManager @cacheHome, simbtn, problem
 
-    new Manager()
+      saved = Cookies.getJSON "cache_sim_save"
+      console.log saved
+      @simManager = new SimManager @cacheHome, simbtn, saved
+
+      if saved?
+        @codeHome.val saved['code']
+      else
+        $("#gen").click()
+
+
+  manager = new Manager()
+
+  closer = ->
+    code = manager.codeHome.val()
+    params = manager.simManager.getParams()
+    params['code'] = code
+    params['s'] = 1 << params['s']
+    params['b'] = 1 << params['b']
+    Cookies.set "cache_sim_save", params,
+      expires: new Date 2020, 1, 1
+
+  window.onunload = closer
+  window.onbeforeunload = closer

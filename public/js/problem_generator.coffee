@@ -6,36 +6,116 @@ typeToSize =
   int: 4
   long: 8
 
-genB = ->
-  1 << Math.floor(Math.random()*3 + 3)
-genS = ->
-  1 << Math.floor(Math.random()*3 + 2)
-genE = ->
-  Math.floor(Math.random()*2 + 1)
+genType = ->
+  index = Math.floor Math.random() * 4
+  ['char', 'short', 'int', 'long'][index]
 
-genSize = ->
-  2*(Math.floor Math.random()*9 + 2)
+
 
 root.Generator = class Generator
+  @basic: ->
+    genB = ->
+      1 << Math.floor(Math.random()*2 + 2)
+    genS = ->
+      1 << Math.floor(Math.random()*2 + 2)
+    genE = ->
+      1
 
-  @easy: () ->
+    genSize = ->
+      2*(Math.floor Math.random()*9 + 2)
+
+    i = genSize()
+    index = Math.floor Math.random() * 4
+    type = genType()
+    arraySize = i*typeToSize[type]
+
+    b = genB()
+    while arraySize % b != 0
+      i = genSize()
+      b = genB()
+
+      type = genType()
+      arraySize = i*typeToSize[type]
+
+
+    code = """#{type} array[#{i}];
+
+for (int i = 0; i < #{i}; ++i) {
+  array[i] = 10;
+}"""
+
+    code: code
+    s: genS()
+    b: b
+    E: genE()
+
+  @easy: ->
+    genB = ->
+      1 << Math.floor(Math.random()*3 + 3)
+    genS = ->
+      1 << Math.floor(Math.random()*3 + 2)
+    genE = ->
+      Math.floor(Math.random()*2 + 1)
+
+    genSize = ->
+      2*(Math.floor Math.random()*9 + 2)
+
     i = genSize()
     j = genSize()
-    index = Math.floor Math.random() * 4
-    type = ['char', 'short', 'int', 'long'][index]
+
+    type = genType()
     arraySize = typeToSize[type]*i*j
     b = genB()
 
     while arraySize % b != 0
       i = genSize()
       j = genSize()
-      index = Math.floor Math.random() * 4
-      type = ['char', 'short', 'int', 'long'][index]
-      arraySize = typeToSize[type]*i*j
       b = genB()
+      type = genType
+      arraySize = typeToSize[type]*i*j
 
     loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
-    index = Math.floor Math.random()*2
+    index = 1
+    code =  """#{type} array[#{i}][#{j}];
+
+    #{loops[Math.abs(index - 1)]} {
+      #{loops[index]} {
+        array[i][j] = 15;
+      }
+    }"""
+
+    code: code
+    s: genS()
+    b: b
+    E: genE()
+
+  @medium: ->
+    genB = ->
+      1 << Math.floor(Math.random()*3 + 3)
+    genS = ->
+      1 << Math.floor(Math.random()*3 + 2)
+    genE = ->
+      Math.floor(Math.random()*2 + 1)
+
+    genSize = ->
+      2*(Math.floor Math.random()*9 + 7)
+
+    i = genSize()
+    j = genSize()
+
+    type = genType()
+    arraySize = typeToSize[type]*i*j
+    b = genB()
+
+    while arraySize % b != 0
+      i = genSize()
+      j = genSize()
+      b = genB()
+      type = genType
+      arraySize = typeToSize[type]*i*j
+
+    loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
+    index = 0
     code =  """#{type} array[#{i}][#{j}];
 
     #{loops[Math.abs(index - 1)]} {

@@ -182,7 +182,7 @@
   })();
 
   STATUS = Object.freeze({
-    powOf2: 0,
+    OK: 0,
     nonPowOf2: 1,
     nan: 2
   });
@@ -192,7 +192,7 @@
       return STATUS.nan;
     } else {
       if ((num | (num - 1)) === (num + num - 1)) {
-        return STATUS.powOf2;
+        return STATUS.OK;
       } else {
         return STATUS.nonPowOf2;
       }
@@ -210,10 +210,17 @@
       $("<div class='col-md-3'/>").text("Associativity").appendTo(nameDiv);
       $("<div class='col-md-3'/>").text("Memory Size").appendTo(nameDiv);
       inputDiv = $("<div class='row'/>").appendTo(this.home);
+      params = params != null ? params : {};
       this.checkDir = {};
-      this.createCheckedInput('s', params.s, inputDiv);
-      this.createCheckedInput('b', params.b, inputDiv);
-      $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='number' id='E'/>").val(params.E).attr("style", "width: 100%;"));
+      this.createCheckedInput('s', params['s'], inputDiv, powOf2Checker);
+      this.createCheckedInput('b', params['b'], inputDiv, powOf2Checker);
+      this.createCheckedInput('E', params['E'], inputDiv, function(val) {
+        if (isNaN(val)) {
+          return STATUS.nan;
+        } else {
+          return STATUS.OK;
+        }
+      });
       $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='number' id='memSize'/>").val("64").attr("style", "width: 100%;"));
     }
 
@@ -227,26 +234,25 @@
     };
 
     SimManager.prototype.setParams = function(p) {
-      $("#s").val(p.s);
-      $("#b").val(p.b);
-      return $("#E").val(p.E);
+      $("#s").val(p.s).trigger("change");
+      $("#b").val(p.b).trigger("change");
+      return $("#E").val(p.E).trigger("change");
     };
 
-    SimManager.prototype.createCheckedInput = function(id, initialVal, parent) {
-      $("<div class='col-md-3'/>").appendTo(parent).append($("<input type='number' id='" + id + "' data-toggle='tooltip' data-placement='auto' data-trigger='manual' />").tooltip().val(initialVal).attr("style", "width: 100%;").on('input', (function(_this) {
+    SimManager.prototype.createCheckedInput = function(id, initialVal, parent, checker) {
+      return $("<div class='col-md-3'/>").appendTo(parent).append($("<input type='number' id='" + id + "' data-toggle='tooltip' data-placement='auto' data-trigger='manual' />").tooltip().val(initialVal).attr("style", "width: 100%;").on('input change', (function(_this) {
         return function() {
-          return _this.checkInput(id);
+          return _this.checkInput(id, checker);
         };
-      })(this)));
-      return this.checkDir[id] = true;
+      })(this)).trigger("change"));
     };
 
-    SimManager.prototype.checkInput = function(id) {
+    SimManager.prototype.checkInput = function(id, checker) {
       var _, isAllTrue, ref, stat, val;
       val = parseInt($("#" + id).val());
-      stat = powOf2Checker(val);
+      stat = checker(val);
       switch (stat) {
-        case STATUS.powOf2:
+        case STATUS.OK:
           $("#" + id).tooltip('hide');
           this.checkDir[id] = true;
           break;
