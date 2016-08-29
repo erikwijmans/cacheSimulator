@@ -12,6 +12,15 @@ $ ->
         .appendTo $ '#content'
       @summaryHome = $ "<p class='log'/>"
         .appendTo $ '#content'
+
+      $ "<button class='btn'>"
+        .text "Generate Random Problem"
+        .appendTo div1
+        .click () =>
+          problem = Generator.easy()
+          @codeHome.val problem.code
+          @simManager.setParams problem
+
       @codeHome = $ "<textarea rows='20' cols='50'/>"
         .attr 'placeholder', 'Code goes here'
         .appendTo div1

@@ -9,6 +9,14 @@
         this.cacheHome = $("<div class='container cache'/>").appendTo($('#content'));
         this.logHome = $('<p class="log"/>').appendTo($('#content'));
         this.summaryHome = $("<p class='log'/>").appendTo($('#content'));
+        $("<button class='btn'>").text("Generate Random Problem").appendTo(div1).click((function(_this) {
+          return function() {
+            var problem;
+            problem = Generator.easy();
+            _this.codeHome.val(problem.code);
+            return _this.simManager.setParams(problem);
+          };
+        })(this));
         this.codeHome = $("<textarea rows='20' cols='50'/>").attr('placeholder', 'Code goes here').appendTo(div1).on('keydown', function(e) {
           var code, end, newText, self, start;
           self = $(this);

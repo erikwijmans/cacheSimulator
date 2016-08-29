@@ -6,20 +6,34 @@ typeToSize =
   int: 4
   long: 8
 
-genB = () ->
+genB = ->
+  1 << Math.floor(Math.random()*3 + 3)
+genS = ->
   1 << Math.floor(Math.random()*3 + 2)
-genS = () ->
-  1 << Math.floor(Math.random()*3 + 1)
-genE = () ->
+genE = ->
   Math.floor(Math.random()*2 + 1)
+
+genSize = ->
+  2*(Math.floor Math.random()*9 + 2)
 
 root.Generator = class Generator
 
   @easy: () ->
-    i = Math.floor Math.random()*15 + 5
-    j = Math.floor Math.random()*15 + 5
+    i = genSize()
+    j = genSize()
     index = Math.floor Math.random() * 4
     type = ['char', 'short', 'int', 'long'][index]
+    arraySize = typeToSize[type]*i*j
+    b = genB()
+
+    while arraySize % b != 0
+      i = genSize()
+      j = genSize()
+      index = Math.floor Math.random() * 4
+      type = ['char', 'short', 'int', 'long'][index]
+      arraySize = typeToSize[type]*i*j
+      b = genB()
+
     loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
     index = Math.floor Math.random()*2
     code =  """#{type} array[#{i}][#{j}];
@@ -29,12 +43,6 @@ root.Generator = class Generator
         array[i][j] = 15;
       }
     }"""
-
-
-    arraySize = typeToSize[type]*i*j
-    b = genB()
-    while arraySize % b is not 0
-      b = genB()
 
     code: code
     s: genS()
