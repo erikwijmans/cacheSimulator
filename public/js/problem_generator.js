@@ -30,7 +30,8 @@
       var arraySize, b, code, i, index, j, loops, type;
       i = Math.floor(Math.random() * 15 + 5);
       j = Math.floor(Math.random() * 15 + 5);
-      type = ['char', 'short', 'int', 'long'][Math.floor(Math.random() * 5)];
+      index = Math.floor(Math.random() * 4);
+      type = ['char', 'short', 'int', 'long'][index];
       loops = ["for (int i = 0; i < " + i + "; ++i)", "for (int j = 0; j < " + j + "; ++j)"];
       index = Math.floor(Math.random() * 2);
       code = type + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}";
