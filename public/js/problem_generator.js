@@ -12,15 +12,15 @@
   };
 
   genB = function() {
-    return 1 << parseInt(Math.random() * 3 + 2);
+    return 1 << Math.floor(Math.random() * 3 + 2);
   };
 
   genS = function() {
-    return 1 << parseInt(Math.random() * 3 + 1);
+    return 1 << Math.floor(Math.random() * 3 + 1);
   };
 
   genE = function() {
-    return parseInt(Math.random() * 2 + 1);
+    return Math.floor(Math.random() * 2 + 1);
   };
 
   root.Generator = Generator = (function() {
@@ -28,11 +28,11 @@
 
     Generator.easy = function() {
       var arraySize, b, code, i, index, j, loops, type;
-      i = parseInt(Math.random() * 15 + 5);
-      j = parseInt(Math.random() * 15 + 5);
-      type = ['char', 'short', 'int', 'long'][parseInt(Math.random() * 5)];
+      i = Math.floor(Math.random() * 15 + 5);
+      j = Math.floor(Math.random() * 15 + 5);
+      type = ['char', 'short', 'int', 'long'][Math.floor(Math.random() * 5)];
       loops = ["for (int i = 0; i < " + i + "; ++i)", "for (int j = 0; j < " + j + "; ++j)"];
-      index = parseInt(Math.random() * 2);
+      index = Math.floor(Math.random() * 2);
       code = type + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}";
       arraySize = typeToSize[type] * i * j;
       b = genB();
