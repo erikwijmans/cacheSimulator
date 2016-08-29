@@ -124,7 +124,7 @@ int main(int argc, char** argv) {''' \
       file.close()
 
     with open("{}.err".format(self.fileno), "w") as file:
-      exit = subprocess.call(shlex.split("gcc -fsyntax-only -Wall {}.c".format(self.fileno)), stderr=file)
+      exit = subprocess.call(shlex.split("gcc -fsyntax-only -std=std=gnu99 -Wall {}.c".format(self.fileno)), stderr=file)
 
     if exit != 0:
       with open("{}.err".format(self.fileno), "r") as file:
