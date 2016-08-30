@@ -37,12 +37,13 @@
       this.states = [];
       this.missRati;
       this.intervalID = null;
-      this.home = $("<div/>").appendTo(this.parent);
+      this.home = $("<div class='row'/>").appendTo(this.parent);
       if (this.summary != null) {
-        this.summary.html("Summary <br/> Hits: " + res['hits'] + " <br/> Misses: " + res['misses'] + " <br/> Miss Ratio: " + res['miss_rate']);
+        this.summary.html("Hits: " + res['hits'] + " <br/> Misses: " + res['misses'] + " <br/> Miss Ratio: " + res['miss_rate']);
       }
+      $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Controls</label>"));
       controlDiv = $("<div class='row'/>").appendTo(this.home);
-      $("<div class='col-md-4'/>").appendTo(controlDiv).append($("<button class='btn' id='autobtn'/>").attr("role", "start").text("Auto").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default' id='autobtn'/>").attr("role", "start").text("Auto").click((function(_this) {
         return function() {
           var autoFunc;
           if ($("#autobtn").attr('role') === 'start') {
@@ -62,16 +63,23 @@
           }
         };
       })(this)));
-      $("<div class='col-md-4'/>").appendTo(controlDiv).append($("<button class='btn'/>").text("Next").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default'/>").text("Next").click((function(_this) {
         return function() {
           return _this.next();
         };
       })(this)));
-      $("<div class='col-md-4'/>").appendTo(controlDiv).append($("<button class='btn'/>").text("Prev").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default'/>").text("Prev").click((function(_this) {
         return function() {
           return _this.prev();
         };
       })(this)));
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default'/>").text("Reset").click((function(_this) {
+        return function() {
+          _this.currentIndex = 0;
+          return _this.print();
+        };
+      })(this)));
+      $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Cache</label>"));
       state = [];
       for (i = j = 0, ref1 = this.numSets; 0 <= ref1 ? j < ref1 : j > ref1; i = 0 <= ref1 ? ++j : --j) {
         row = $("<div class='row'/>").appendTo(this.home);
@@ -97,7 +105,7 @@
         address = line['address'];
         set = line['set'];
         if (this.log != null) {
-          this.out.push("Address: 0x" + (address.toString(16)) + "  Tag: 0x" + (tag.toString(16)) + "  Set: " + set + "  " + nameMap[accType]);
+          this.out.push("<strong>Address:</strong> 0x" + (address.toString(16)) + "  <strong>Tag:</strong> 0x" + (tag.toString(16)) + "  <strong>Set:</strong> " + set + "  <strong>" + nameMap[accType] + "</strong>");
         }
         newState = this.states[this.states.length - 1].slice(0);
         newState[block] = {
@@ -205,10 +213,10 @@
       this.home = home;
       this.simbtn = simbtn;
       nameDiv = $("<div class='row'/>").appendTo(this.home);
-      $("<div class='col-md-3'/>").text("Number of Sets").appendTo(nameDiv);
-      $("<div class='col-md-3'/>").text("Bytes per Block").appendTo(nameDiv);
-      $("<div class='col-md-3'/>").text("Associativity").appendTo(nameDiv);
-      $("<div class='col-md-3'/>").text("Memory Size").appendTo(nameDiv);
+      $("<h3 class='col-md-3 panel-title'/>").text("Number of Sets").appendTo(nameDiv);
+      $("<h3 class='col-md-3 panel-title'/>").text("Bytes per Block").appendTo(nameDiv);
+      $("<h3 class='col-md-3 panel-title'/>").text("Associativity").appendTo(nameDiv);
+      $("<h3 class='col-md-3 panel-title'/>").text("Memory Size").appendTo(nameDiv);
       inputDiv = $("<div class='row'/>").appendTo(this.home);
       params = params != null ? params : {};
       this.checkDir = {};

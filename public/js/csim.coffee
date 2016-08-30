@@ -26,21 +26,26 @@ root.CSim = class CSim
     @states = []
     @missRati
     @intervalID = null
-    @home = $ "<div/>"
+    @home = $ "<div class='row'/>"
       .appendTo @parent
 
     if @summary?
-      @summary.html "Summary <br/>
+      @summary.html "
     Hits: #{res['hits']} <br/>
     Misses: #{res['misses']} <br/>
     Miss Ratio: #{res['miss_rate']}"
 
+
+    $ "<div class='row'/>"
+      .appendTo @home
+      .append $ "<label><br/>Controls</label>"
+
     controlDiv = $ "<div class='row'/>"
       .appendTo @home
 
-    $ "<div class='col-md-4'/>"
+    $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn' id='autobtn'/>"
+      .append($ "<button class='btn btn-default' id='autobtn'/>"
         .attr "role", "start"
         .text "Auto"
         .click () =>
@@ -62,21 +67,35 @@ root.CSim = class CSim
               .attr "role", 'start'
       )
 
-    $ "<div class='col-md-4'/>"
+    $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn'/>"
-      .text "Next"
-      .click () =>
-        @next()
+      .append($ "<button class='btn btn-default'/>"
+        .text "Next"
+        .click () =>
+          @next()
       )
 
-    $ "<div class='col-md-4'/>"
+    $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn'/>"
-      .text "Prev"
-      .click () =>
-        @prev()
+      .append($ "<button class='btn btn-default'/>"
+        .text "Prev"
+        .click () =>
+          @prev()
       )
+
+    $ "<div class='col-md-3'/>"
+      .appendTo controlDiv
+      .append($ "<button class='btn btn-default'/>"
+        .text "Reset"
+        .click () =>
+          @currentIndex = 0
+          @print()
+      )
+
+
+    $ "<div class='row'/>"
+      .appendTo @home
+      .append $ "<label><br/>Cache</label>"
 
     state = []
     for i in [0...@numSets]
@@ -115,8 +134,7 @@ root.CSim = class CSim
       set = line['set']
 
       if @log?
-        @out.push "Address: 0x#{address.toString 16}  Tag: 0x#{tag.toString 16}  Set: #{set}  #{nameMap[accType]}"
-
+        @out.push "<strong>Address:</strong> 0x#{address.toString 16}  <strong>Tag:</strong> 0x#{tag.toString 16}  <strong>Set:</strong> #{set}  <strong>#{nameMap[accType]}</strong>"
 
       newState = @states[@states.length - 1][..]
       newState[block] =
@@ -197,19 +215,19 @@ root.SimManager = class SimManager
     nameDiv = $ "<div class='row'/>"
       .appendTo @home
 
-    $ "<div class='col-md-3'/>"
+    $ "<h3 class='col-md-3 panel-title'/>"
       .text "Number of Sets"
       .appendTo nameDiv
 
-    $ "<div class='col-md-3'/>"
+    $ "<h3 class='col-md-3 panel-title'/>"
       .text "Bytes per Block"
       .appendTo nameDiv
 
-    $ "<div class='col-md-3'/>"
+    $ "<h3 class='col-md-3 panel-title'/>"
       .text "Associativity"
       .appendTo nameDiv
 
-    $ "<div class='col-md-3'/>"
+    $ "<h3 class='col-md-3 panel-title'/>"
       .text "Memory Size"
       .appendTo nameDiv
 

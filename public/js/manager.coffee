@@ -8,10 +8,25 @@ $ ->
         .appendTo $ '#content'
 
 
-      @logHome =  $ '<p class="log"/>'
-        .appendTo $ '#content'
-      @summaryHome = $ "<p class='log'/>"
-        .appendTo $ '#content'
+      @logHome =  $ '<div class="panel-body"/>'
+        .appendTo($ "<div class='panel panel-default'>
+            <div class='panel-heading'>
+              <h3 class='panel-title'>Trace</h3>
+            </div>
+          </div>
+          "
+        .appendTo $ "#content"
+      )
+
+      @summaryHome = $ '<div class="panel-body"/>'
+        .appendTo($ "<div class='panel panel-default'>
+            <div class='panel-heading'>
+              <h3 class='panel-title'>Summary</h3>
+            </div>
+          </div>
+          "
+        .appendTo $ "#content"
+      )
 
       $ "<select class='selectpicker'
         data-width='fit'
@@ -24,7 +39,7 @@ $ ->
         </select>"
         .appendTo div1
 
-      $ "<button class='btn' id='gen'>"
+      $ "<button class='btn btn-primary' id='gen'>"
         .text "Generate Random Problem"
         .appendTo div1
         .click () =>
@@ -43,7 +58,7 @@ $ ->
           @codeHome.val problem.code
           @simManager.setParams problem
 
-      @codeHome = $ "<textarea rows='20' cols='50'/>"
+      @codeHome = $ "<textarea class='form-control' rows='18' cols='50'/>"
         .attr 'placeholder', 'Code goes here'
         .appendTo div1
         .on 'keydown', (e) ->
@@ -63,11 +78,11 @@ $ ->
 
 
 
-      @traceHome = $ "<textarea rows='20' cols='50'/>"
+      @traceHome = $ "<textarea class='form-control' rows='20' cols='50'/>"
         .attr 'placeholder', "Trace goes here (will be automatically filled if code is traced)"
       @simulator = null
 
-      $ "<button class='btn'/>"
+      $ "<button class='btn btn-primary'/>"
         .text "Trace Code"
         .appendTo div1
         .click () =>
@@ -83,10 +98,12 @@ $ ->
 
       @traceHome.appendTo div1
 
-      simbtn = $ "<button class='btn'/>"
+      @simbtn = $ "<button class='btn btn-primary'/>"
         .text "Simulate"
         .appendTo div1
         .click () =>
+          if @simbtn.hasClass "disabled"
+            return
           trace = @traceHome.val().split("\n")
           params = @simManager.getParams()
           console.log params
@@ -102,10 +119,11 @@ $ ->
 
       saved = Cookies.getJSON "cache_sim_save"
       console.log saved
-      @simManager = new SimManager @cacheHome, simbtn, saved
+      @simManager = new SimManager @cacheHome, @simbtn
 
       if saved?
         @codeHome.val saved['code']
+        @simManager.setParams saved
       else
         $("#gen").click()
 

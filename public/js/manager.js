@@ -4,13 +4,13 @@
     var Manager, closer, manager;
     Manager = (function() {
       function Manager() {
-        var div1, saved, simbtn;
+        var div1, saved;
         div1 = $("<div class='trace'/>").appendTo('#content');
         this.cacheHome = $("<div class='cache'/>").appendTo($('#content'));
-        this.logHome = $('<p class="log"/>').appendTo($('#content'));
-        this.summaryHome = $("<p class='log'/>").appendTo($('#content'));
+        this.logHome = $('<div class="panel-body"/>').appendTo($("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Trace</h3> </div> </div>").appendTo($("#content")));
+        this.summaryHome = $('<div class="panel-body"/>').appendTo($("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Summary</h3> </div> </div>").appendTo($("#content")));
         $("<select class='selectpicker' data-width='fit' id='difficulty'> <optgroup label='Problem Difficulty'> <option>Basic</option> <option>Easy</option> <option>Medium</option> </optgroup> </select>").appendTo(div1);
-        $("<button class='btn' id='gen'>").text("Generate Random Problem").appendTo(div1).click((function(_this) {
+        $("<button class='btn btn-primary' id='gen'>").text("Generate Random Problem").appendTo(div1).click((function(_this) {
           return function() {
             var difficulty, problem;
             difficulty = $("#difficulty").val().toLowerCase();
@@ -32,7 +32,7 @@
             return _this.simManager.setParams(problem);
           };
         })(this));
-        this.codeHome = $("<textarea rows='20' cols='50'/>").attr('placeholder', 'Code goes here').appendTo(div1).on('keydown', function(e) {
+        this.codeHome = $("<textarea class='form-control' rows='18' cols='50'/>").attr('placeholder', 'Code goes here').appendTo(div1).on('keydown', function(e) {
           var code, end, newText, self, start;
           self = $(this);
           if (e.which === 9 && (self.prop("selectionStart") != null)) {
@@ -48,9 +48,9 @@
             return true;
           }
         });
-        this.traceHome = $("<textarea rows='20' cols='50'/>").attr('placeholder', "Trace goes here (will be automatically filled if code is traced)");
+        this.traceHome = $("<textarea class='form-control' rows='20' cols='50'/>").attr('placeholder', "Trace goes here (will be automatically filled if code is traced)");
         this.simulator = null;
-        $("<button class='btn'/>").text("Trace Code").appendTo(div1).click((function(_this) {
+        $("<button class='btn btn-primary'/>").text("Trace Code").appendTo(div1).click((function(_this) {
           return function() {
             var code;
             code = _this.codeHome.val();
@@ -75,9 +75,12 @@
           };
         })(this));
         this.traceHome.appendTo(div1);
-        simbtn = $("<button class='btn'/>").text("Simulate").appendTo(div1).click((function(_this) {
+        this.simbtn = $("<button class='btn btn-primary'/>").text("Simulate").appendTo(div1).click((function(_this) {
           return function() {
             var params, trace;
+            if (_this.simbtn.hasClass("disabled")) {
+              return;
+            }
             trace = _this.traceHome.val().split("\n");
             params = _this.simManager.getParams();
             console.log(params);
@@ -95,9 +98,10 @@
         })(this));
         saved = Cookies.getJSON("cache_sim_save");
         console.log(saved);
-        this.simManager = new SimManager(this.cacheHome, simbtn, saved);
+        this.simManager = new SimManager(this.cacheHome, this.simbtn);
         if (saved != null) {
           this.codeHome.val(saved['code']);
+          this.simManager.setParams(saved);
         } else {
           $("#gen").click();
         }

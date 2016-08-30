@@ -92,6 +92,7 @@ int main(int argc, char** argv) {''' \
       + ";".join(source_code) + '''  return 0;
 }'''
 
+
     with open("{}.cpp".format(self.fileno), "w") as file:
       file.write(source)
       file.close()
