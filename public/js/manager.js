@@ -114,9 +114,10 @@
       params['code'] = code;
       params['s'] = 1 << params['s'];
       params['b'] = 1 << params['b'];
-      return Cookies.set("cache_sim_save", params, {
+      Cookies.set("cache_sim_save", params, {
         expires: new Date(2020, 1, 1)
       });
+      return true;
     };
     window.onunload = closer;
     return window.onbeforeunload = closer;

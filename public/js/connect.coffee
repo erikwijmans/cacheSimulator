@@ -22,13 +22,6 @@ for (i = 0; i < 16; i ++){
 }
   """
 
-parser = $("<a/>")
-parser.href = window.url
-hostname = parser.hostname
-if hostname.find("github.io") != 0
-  hostname = "ec2-52-43-229-235.us-west-2.compute.amazonaws.com"
-
-
 ajaxReq = (url, data, cb) ->
   $.ajax
     dataType: 'json'
@@ -41,10 +34,10 @@ ajaxReq = (url, data, cb) ->
       console.log err
 
 root.getTrace = getTrace = (code, cb) ->
- ajaxReq "#{hostname}/trace", JSON.stringify(code), cb
+ ajaxReq "/trace", JSON.stringify(code), cb
 
 root.getSim = getSim = (trace, cacheParams, cb) ->
-  ajaxReq "#{hostname}/simulate", JSON.stringify(
+  ajaxReq "/simulate", JSON.stringify(
     trace: trace
     s: cacheParams['s']
     b: cacheParams['b']

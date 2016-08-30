@@ -121,5 +121,7 @@ $ ->
     Cookies.set "cache_sim_save", params,
       expires: new Date 2020, 1, 1
 
+    true
+
   window.onunload = closer
   window.onbeforeunload = closer
