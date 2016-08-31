@@ -37,13 +37,13 @@
       this.states = [];
       this.missRati;
       this.intervalID = null;
-      this.home = $("<div class='row'/>").appendTo(this.parent);
+      this.home = $("<div/>").appendTo(this.parent);
       if (this.summary != null) {
-        this.summary.html("Hits: " + res['hits'] + " <br/> Misses: " + res['misses'] + " <br/> Miss Ratio: " + res['miss_rate']);
+        this.summary.html("Hits: " + res['hits'] + " <br/> Misses: " + res['misses'] + " <br/> Evicts: " + res['evicts'] + " <br/> Miss Ratio: " + res['miss_rate']);
       }
-      $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Controls</label>"));
+      $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Simulation Controls</label>"));
       controlDiv = $("<div class='row'/>").appendTo(this.home);
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default' id='autobtn'/>").attr("role", "start").text("Auto").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary' id='autobtn'/>").attr("role", "start").text("Auto").click((function(_this) {
         return function() {
           var autoFunc;
           if ($("#autobtn").attr('role') === 'start') {
@@ -63,17 +63,17 @@
           }
         };
       })(this)));
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default'/>").text("Next").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary'/>").text("Next").click((function(_this) {
         return function() {
           return _this.next();
         };
       })(this)));
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default'/>").text("Prev").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary'/>").text("Prev").click((function(_this) {
         return function() {
           return _this.prev();
         };
       })(this)));
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-default'/>").text("Reset").click((function(_this) {
+      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary'/>").text("Reset").click((function(_this) {
         return function() {
           _this.currentIndex = 0;
           return _this.print();
@@ -82,11 +82,11 @@
       $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Cache</label>"));
       state = [];
       for (i = j = 0, ref1 = this.numSets; 0 <= ref1 ? j < ref1 : j > ref1; i = 0 <= ref1 ? ++j : --j) {
-        row = $("<div class='row'/>").appendTo(this.home);
+        row = $("<div class='row panel-group'/>").appendTo(this.home);
         $("<p class='col-md-2' style='margin-top: 15px;'> Set " + i + "</p>").appendTo(row);
         inner = $("<div class='row col-md-10'/>").appendTo(row);
         for (_ = k = 0, ref2 = this.E; 0 <= ref2 ? k < ref2 : k > ref2; _ = 0 <= ref2 ? ++k : --k) {
-          block = $("<p class='block empty'/>").text('-1').appendTo($("<div class='col-md-3'/>").appendTo(inner));
+          block = $("<div class='col-md-3'> <div class='panel panel-default empty'> <div class='panel-body'/> </div> </div>").appendTo(inner).find($(".panel-body")).text("-1");
           this.cache.push(block);
           state.push({
             tag: -1,
@@ -105,7 +105,7 @@
         address = line['address'];
         set = line['set'];
         if (this.log != null) {
-          this.out.push("<strong>Address:</strong> 0x" + (address.toString(16)) + "  <strong>Tag:</strong> 0x" + (tag.toString(16)) + "  <strong>Set:</strong> " + set + "  <strong>" + nameMap[accType] + "</strong>");
+          this.out.push(("<strong>Address:</strong> 0x" + (address.toString(16)) + "\n<strong>Tag:</strong> 0x" + (tag.toString(16)) + " <strong>Set:</strong> " + set + "\n<strong>" + nameMap[accType] + "</strong>").split("\n").join("<br/>"));
         }
         newState = this.states[this.states.length - 1].slice(0);
         newState[block] = {
@@ -120,27 +120,26 @@
       var b, i, j, len, ref, text;
       if (this.log != null) {
         text = (this.out.slice(1, +this.currentIndex + 1 || 9e9).join("<br><br>")) + "<br>";
-        console.log(text);
         this.log.html(text);
         this.log.scrollTop(this.log[0].scrollHeight);
       }
       ref = this.states[this.currentIndex];
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         b = ref[i];
-        this.cache[i].removeClass("hit miss evict empty");
+        this.cache[i].parent().removeClass("hit miss evict empty");
         this.cache[i].text(b.tag !== -1 ? "0x" + (b.tag.toString(16)) : b.tag);
         switch (b.type) {
           case 0:
-            this.cache[i].addClass("empty");
+            this.cache[i].parent().addClass("empty");
             break;
           case AccessType.hit:
-            this.cache[i].addClass("hit");
+            this.cache[i].parent().addClass("hit");
             break;
           case AccessType.miss:
-            this.cache[i].addClass("miss");
+            this.cache[i].parent().addClass("miss");
             break;
           case AccessType.evict:
-            this.cache[i].addClass("evict");
+            this.cache[i].parent().addClass("evict");
             break;
           default:
             console.log("Unsupported Type: " + b.type);
@@ -196,7 +195,7 @@
   });
 
   powOf2Checker = function(num) {
-    if (isNaN(num)) {
+    if (isNaN(num) || num === 0) {
       return STATUS.nan;
     } else {
       if ((num | (num - 1)) === (num + num - 1)) {
@@ -212,6 +211,7 @@
       var inputDiv, nameDiv;
       this.home = home;
       this.simbtn = simbtn;
+      $("<div class='row'/>").appendTo(this.home).append($("<label>Cache Settings</label>"));
       nameDiv = $("<div class='row'/>").appendTo(this.home);
       $("<h3 class='col-md-3 panel-title'/>").text("Number of Sets").appendTo(nameDiv);
       $("<h3 class='col-md-3 panel-title'/>").text("Bytes per Block").appendTo(nameDiv);
@@ -223,13 +223,13 @@
       this.createCheckedInput('s', params['s'], inputDiv, powOf2Checker);
       this.createCheckedInput('b', params['b'], inputDiv, powOf2Checker);
       this.createCheckedInput('E', params['E'], inputDiv, function(val) {
-        if (isNaN(val)) {
+        if (isNaN(val) || val === 0) {
           return STATUS.nan;
         } else {
           return STATUS.OK;
         }
       });
-      $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='number' id='memSize'/>").val("64").attr("style", "width: 100%;"));
+      $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='text' id='memSize'/>").val("64").attr("style", "width: 100%;"));
     }
 
     SimManager.prototype.getParams = function() {
@@ -248,7 +248,7 @@
     };
 
     SimManager.prototype.createCheckedInput = function(id, initialVal, parent, checker) {
-      return $("<div class='col-md-3'/>").appendTo(parent).append($("<input type='number' id='" + id + "' data-toggle='tooltip' data-placement='auto' data-trigger='manual' />").tooltip().val(initialVal).attr("style", "width: 100%;").on('input change', (function(_this) {
+      return $("<div class='col-md-3'/>").appendTo(parent).append($("<input type='text' id='" + id + "' data-toggle='tooltip' data-placement='auto' data-trigger='manual' />").tooltip().val(initialVal).attr("style", "width: 100%;").on('input change', (function(_this) {
         return function() {
           return _this.checkInput(id, checker);
         };
@@ -256,20 +256,25 @@
     };
 
     SimManager.prototype.checkInput = function(id, checker) {
-      var _, isAllTrue, ref, stat, val;
+      var _, isAllTrue, ref, self, stat, val;
       val = parseInt($("#" + id).val());
       stat = checker(val);
+      self = $("#" + id);
       switch (stat) {
         case STATUS.OK:
           $("#" + id).tooltip('hide');
           this.checkDir[id] = true;
           break;
         case STATUS.nonPowOf2:
-          $("#" + id).attr('data-original-title', 'Must be a power of 2').tooltip('fixTitle').tooltip('show');
+          if (self.attr('data-original-title') !== 'Must be a power of 2') {
+            self.attr('data-original-title', 'Must be a power of 2').tooltip('fixTitle').tooltip('show');
+          }
           this.checkDir[id] = false;
           break;
         case STATUS.nan:
-          $("#" + id).attr('data-original-title', 'Must be a number').tooltip('fixTitle').tooltip('show');
+          if (self.attr('data-original-title') !== 'Must be a non-zero number') {
+            self.attr('data-original-title', 'Must be a non-zero number').tooltip('fixTitle').tooltip('show');
+          }
           this.checkDir[id] = false;
           break;
         default:

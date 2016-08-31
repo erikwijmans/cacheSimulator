@@ -4,11 +4,14 @@
     var Manager, closer, manager;
     Manager = (function() {
       function Manager() {
-        var div1, saved;
-        div1 = $("<div class='trace'/>").appendTo('#content');
-        this.cacheHome = $("<div class='cache'/>").appendTo($('#content'));
-        this.logHome = $('<div class="panel-body"/>').appendTo($("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Trace</h3> </div> </div>").appendTo($("#content")));
-        this.summaryHome = $('<div class="panel-body"/>').appendTo($("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Summary</h3> </div> </div>").appendTo($("#content")));
+        var col, div1, logs, saved;
+        div1 = $("<div class='col-lg-3'/>").appendTo('#content');
+        this.cacheHome = $("<div class='col-lg-4 col-lg-offset-1'/>").appendTo($('#content'));
+        logs = $("<div class='col-lg-3 col-lg-offset-1'> <div class='row'/> </div>").appendTo($("#content")).find($(".row"));
+        col = $("<div class='col-md-6'/>").appendTo(logs);
+        this.logHome = $("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Simulation Breakdown</h3> </div> <div class='panel-body log'/> </div>").appendTo(col).find($(".panel-body"));
+        col = $("<div class='col-md-6'/>").appendTo(logs);
+        this.summaryHome = $("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Simulation Summary</h3> </div> <div class='panel-body log'/> </div>").appendTo(col).find($(".panel-body"));
         $("<select class='selectpicker' data-width='fit' id='difficulty'> <optgroup label='Problem Difficulty'> <option>Basic</option> <option>Easy</option> <option>Medium</option> </optgroup> </select>").appendTo(div1);
         $("<button class='btn btn-primary' id='gen'>").text("Generate Random Problem").appendTo(div1).click((function(_this) {
           return function() {

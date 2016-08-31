@@ -2,31 +2,43 @@ $ ->
   class Manager
     constructor: ->
 
-      div1 = $ "<div class='trace'/>"
+      div1 = $ "<div class='col-lg-3'/>"
         .appendTo '#content'
-      @cacheHome = $ "<div class='cache'/>"
+      @cacheHome = $ "<div class='col-lg-4 col-lg-offset-1'/>"
         .appendTo $ '#content'
 
 
-      @logHome =  $ '<div class="panel-body"/>'
-        .appendTo($ "<div class='panel panel-default'>
-            <div class='panel-heading'>
-              <h3 class='panel-title'>Trace</h3>
-            </div>
-          </div>
-          "
+      logs = $ "<div class='col-lg-3 col-lg-offset-1'>
+        <div class='row'/>
+      </div>"
         .appendTo $ "#content"
-      )
+        .find $ ".row"
 
-      @summaryHome = $ '<div class="panel-body"/>'
-        .appendTo($ "<div class='panel panel-default'>
+      col = $ "<div class='col-md-6'/>"
+        .appendTo logs
+      @logHome = $ "<div class='panel panel-default'>
             <div class='panel-heading'>
-              <h3 class='panel-title'>Summary</h3>
+              <h3 class='panel-title'>Simulation Breakdown</h3>
             </div>
+            <div class='panel-body log'/>
+          </div>
+        "
+        .appendTo col
+        .find $ ".panel-body"
+
+
+      col = $ "<div class='col-md-6'/>"
+        .appendTo logs
+      @summaryHome = $ "<div class='panel panel-default'>
+            <div class='panel-heading'>
+              <h3 class='panel-title'>Simulation Summary</h3>
+            </div>
+            <div class='panel-body log'/>
           </div>
           "
-        .appendTo $ "#content"
-      )
+        .appendTo col
+        .find $ ".panel-body"
+
 
       $ "<select class='selectpicker'
         data-width='fit'

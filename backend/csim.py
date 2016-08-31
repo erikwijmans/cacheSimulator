@@ -13,6 +13,7 @@ class CSim:
     self.set_mask = ((1 << s) - 1)
     self.hits = 0
     self.misses = 0
+    self.evicts = 0
 
     self.mem = []
 
@@ -47,12 +48,15 @@ class CSim:
       self.hits += 1
     else:
       self.misses += 1
+      if acc_type == ACC_TYPE.evict:
+        self.evicts += 1
 
   def get_res(self):
     return {
       'trace':self.res,
       'hits': self.hits,
       'misses': self.misses,
+      'evicts': self.evicts,
       'miss_rate': "{:1.3f}".format(float(self.misses)/(self.hits + self.misses))
     }
 

@@ -26,26 +26,27 @@ root.CSim = class CSim
     @states = []
     @missRati
     @intervalID = null
-    @home = $ "<div class='row'/>"
+    @home = $ "<div/>"
       .appendTo @parent
 
     if @summary?
       @summary.html "
     Hits: #{res['hits']} <br/>
     Misses: #{res['misses']} <br/>
+    Evicts: #{res['evicts']} <br/>
     Miss Ratio: #{res['miss_rate']}"
 
 
     $ "<div class='row'/>"
       .appendTo @home
-      .append $ "<label><br/>Controls</label>"
+      .append $ "<label><br/>Simulation Controls</label>"
 
     controlDiv = $ "<div class='row'/>"
       .appendTo @home
 
     $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn btn-default' id='autobtn'/>"
+      .append($ "<button class='btn btn-primary' id='autobtn'/>"
         .attr "role", "start"
         .text "Auto"
         .click () =>
@@ -69,7 +70,7 @@ root.CSim = class CSim
 
     $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn btn-default'/>"
+      .append($ "<button class='btn btn-primary'/>"
         .text "Next"
         .click () =>
           @next()
@@ -77,7 +78,7 @@ root.CSim = class CSim
 
     $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn btn-default'/>"
+      .append($ "<button class='btn btn-primary'/>"
         .text "Prev"
         .click () =>
           @prev()
@@ -85,7 +86,7 @@ root.CSim = class CSim
 
     $ "<div class='col-md-3'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn btn-default'/>"
+      .append($ "<button class='btn btn-primary'/>"
         .text "Reset"
         .click () =>
           @currentIndex = 0
@@ -99,21 +100,25 @@ root.CSim = class CSim
 
     state = []
     for i in [0...@numSets]
-      row = $("<div class='row'/>").appendTo @home
+      row = $("<div class='row panel-group'/>").appendTo @home
 
       $ "<p class='col-md-2'
         style='margin-top: 15px;'>
         Set #{i}</p>"
         .appendTo row
+
       inner = $ "<div class='row col-md-10'/>"
         .appendTo row
+
       for _ in [0...@E]
-        block = $ "<p class='block empty'/>"
-          .text '-1'
-          .appendTo(
-            $ "<div class='col-md-3'/>"
-              .appendTo inner
-          )
+        block = $ "<div class='col-md-3'>
+          <div class='panel panel-default empty'>
+            <div class='panel-body'/>
+          </div>
+        </div>"
+          .appendTo inner
+          .find $ ".panel-body"
+          .text "-1"
 
 
         @cache.push block
@@ -134,7 +139,9 @@ root.CSim = class CSim
       set = line['set']
 
       if @log?
-        @out.push "<strong>Address:</strong> 0x#{address.toString 16}  <strong>Tag:</strong> 0x#{tag.toString 16}  <strong>Set:</strong> #{set}  <strong>#{nameMap[accType]}</strong>"
+        @out.push """<strong>Address:</strong> 0x#{address.toString 16}
+        <strong>Tag:</strong> 0x#{tag.toString 16} <strong>Set:</strong> #{set}
+        <strong>#{nameMap[accType]}</strong>""".split("\n").join("<br/>")
 
       newState = @states[@states.length - 1][..]
       newState[block] =
@@ -146,22 +153,23 @@ root.CSim = class CSim
   print: ->
     if @log?
       text = "#{@out[1..@currentIndex].join("<br><br>")}<br>"
-      console.log text
+
       @log.html text
       @log.scrollTop @log[0].scrollHeight
 
+
     for b, i in @states[@currentIndex]
-      @cache[i].removeClass "hit miss evict empty"
+      @cache[i].parent().removeClass "hit miss evict empty"
       @cache[i].text if b.tag != -1 then "0x#{b.tag.toString 16}" else b.tag
       switch b.type
         when 0
-          @cache[i].addClass "empty"
+          @cache[i].parent().addClass "empty"
         when AccessType.hit
-          @cache[i].addClass "hit"
+          @cache[i].parent().addClass "hit"
         when AccessType.miss
-          @cache[i].addClass "miss"
+          @cache[i].parent().addClass "miss"
         when AccessType.evict
-          @cache[i].addClass "evict"
+          @cache[i].parent().addClass "evict"
         else
           console.log "Unsupported Type: #{b.type}"
 
@@ -204,7 +212,7 @@ STATUS = Object.freeze
   nan: 2
 
 powOf2Checker = (num) ->
-  if isNaN(num)
+  if isNaN(num) or num is 0
     STATUS.nan
   else
     if (num | (num - 1)) is (num + num - 1) then STATUS.OK else STATUS.nonPowOf2
@@ -212,6 +220,10 @@ powOf2Checker = (num) ->
 
 root.SimManager = class SimManager
   constructor: (@home, @simbtn, params) ->
+    $ "<div class='row'/>"
+      .appendTo @home
+      .append $ "<label>Cache Settings</label>"
+
     nameDiv = $ "<div class='row'/>"
       .appendTo @home
 
@@ -240,12 +252,12 @@ root.SimManager = class SimManager
     @createCheckedInput 's', params['s'], inputDiv, powOf2Checker
     @createCheckedInput 'b', params['b'], inputDiv, powOf2Checker
     @createCheckedInput 'E', params['E'], inputDiv, (val) ->
-      if isNaN(val) then STATUS.nan else STATUS.OK
+      if isNaN(val) or val is 0 then STATUS.nan else STATUS.OK
 
 
     $ "<div class='col-md-3'/>"
       .appendTo inputDiv
-      .append($ "<input type='number' id='memSize'/>"
+      .append($ "<input type='text' id='memSize'/>"
         .val "64"
         .attr "style", "width: 100%;"
         )
@@ -269,42 +281,42 @@ root.SimManager = class SimManager
 
   createCheckedInput: (id, initialVal, parent, checker) ->
     $ "<div class='col-md-3'/>"
-        .appendTo parent
-        .append($ "<input type='number' id='#{id}'
-                  data-toggle='tooltip'
-                  data-placement='auto'
-                  data-trigger='manual'
-                  />"
-          .tooltip()
-          .val initialVal
-          .attr "style", "width: 100%;"
-          .on 'input change', () =>
-            @checkInput id, checker
-          .trigger "change"
-          )
+      .appendTo parent
+      .append($ "<input type='text' id='#{id}'
+                data-toggle='tooltip'
+                data-placement='auto'
+                data-trigger='manual'
+                />"
+        .tooltip()
+        .val initialVal
+        .attr "style", "width: 100%;"
+        .on 'input change', () =>
+          @checkInput id, checker
+        .trigger "change"
+      )
 
 
   checkInput: (id, checker) ->
     val = parseInt $("##{id}").val()
     stat =  checker val
-
+    self = $("##{id}")
     switch stat
       when STATUS.OK
         $("##{id}").tooltip 'hide'
 
         @checkDir[id] = true
       when STATUS.nonPowOf2
-        $ "##{id}"
-          .attr 'data-original-title', 'Must be a power of 2'
-          .tooltip 'fixTitle'
-          .tooltip 'show'
+        if self.attr('data-original-title') != 'Must be a power of 2'
+          self.attr 'data-original-title', 'Must be a power of 2'
+            .tooltip 'fixTitle'
+            .tooltip 'show'
 
         @checkDir[id] = false
       when STATUS.nan
-        $ "##{id}"
-          .attr 'data-original-title', 'Must be a number'
-          .tooltip 'fixTitle'
-          .tooltip 'show'
+        if self.attr('data-original-title') != 'Must be a non-zero number'
+          self.attr 'data-original-title', 'Must be a non-zero number'
+            .tooltip 'fixTitle'
+            .tooltip 'show'
 
         @checkDir[id] = false
       else
