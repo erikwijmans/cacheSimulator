@@ -13,6 +13,8 @@ nameMap =
 height = 50
 width = 50
 
+performance.now = (performance.now or date.now)
+
 root.CSim = class CSim
   constructor: (@s, @E, res, options) ->
     options = options ? {}
@@ -39,64 +41,118 @@ root.CSim = class CSim
 
     $ "<div class='row'/>"
       .appendTo @home
-      .append $ "<label><br/>Simulation Controls</label>"
+      .append $ "<hr>
+      <h1 class='panel-title'>Simulation Controls</h1>
+      <br/>"
 
-    controlDiv = $ "<div class='row'/>"
+    controlDiv = $ "<div class='btn-group row'/>"
       .appendTo @home
 
-    $ "<div class='col-md-3'/>"
+    btnHome = $ "<div class='col-md-7'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn btn-primary' id='autobtn'/>"
-        .attr "role", "start"
-        .text "Auto"
-        .click () =>
-          if $("#autobtn").attr('role') is 'start'
-            autoFunc = () =>
-              @intervalID = setInterval () =>
+
+    $ "<button class='btn btn-primary' id='autobtn'
+        data-toggle='tooltip'
+        data-title='Automatically advanced the simulation.  Use the slider to control the speed'
+        data-placement='auto'
+    />"
+      .attr "role", "start"
+      .text "Auto"
+      .tooltip('delay':
+        show: 1000
+        hide: 100
+      )
+      .appendTo btnHome
+      .click () =>
+        self = $("#autobtn")
+        if self.attr('role') is 'start'
+          @lastTime = 0
+          autoFunc = () =>
+            @intervalID = setInterval () =>
+              time = 2000 - 2000*@slider.slider("getValue")
+              if (performance.now() - @lastTime) > time
+                @lastTime = performance.now()
                 @next()
-                if not @hasNext()
-                  clearInterval @intervalID
-              , 1000
+              else if not @hasNext()
+                clearInterval @intervalID
+                self.text "Auto"
+                  .attr "role", "start"
+            , 2
 
-            autoFunc()
+          autoFunc()
 
-            $("#autobtn").text "Stop"
-              .attr "role", 'stop'
-          else
-            clearInterval @intervalID
-            $("#autobtn").text "Auto"
-              .attr "role", 'start'
+          self.text "Stop"
+            .attr "role", 'stop'
+        else
+          clearInterval @intervalID
+          self.text "Auto"
+            .attr "role", 'start'
+
+    $ "<button class='btn btn-primary'
+      data-toggle='tooltip'
+      data-title='Moves the simulation back one memory accesses'
+      data-placement='auto'
+    />"
+      .text "Prev"
+      .appendTo btnHome
+      .tooltip('delay':
+        show: 1000
+        hide: 100
       )
+      .click () =>
+        @prev()
 
-    $ "<div class='col-md-3'/>"
+    $ "<button class='btn btn-primary'
+      data-toggle='tooltip'
+      data-title='Moves the simulation forward one memory accesses'
+      data-placement='auto'
+    />"
+      .text "Next"
+      .appendTo btnHome
+      .tooltip('delay':
+        show: 1000
+        hide: 100
+      )
+      .click () =>
+        @next()
+
+
+    $ "<button class='btn btn-primary'
+      data-toggle='tooltip'
+      data-title='Resets the simulation'
+      data-placement='auto'
+    />"
+      .text "Reset"
+      .appendTo btnHome
+      .tooltip('delay':
+        show: 1000
+        hide: 100
+      )
+      .click () =>
+        @currentIndex = 0
+        @print()
+
+    sliderHome = $ "<div class='col-md-5'/>"
       .appendTo controlDiv
-      .append($ "<button class='btn btn-primary'/>"
-        .text "Next"
-        .click () =>
-          @next()
-      )
 
-    $ "<div class='col-md-3'/>"
-      .appendTo controlDiv
-      .append($ "<button class='btn btn-primary'/>"
-        .text "Prev"
-        .click () =>
-          @prev()
-      )
-
-    $ "<div class='col-md-3'/>"
-      .appendTo controlDiv
-      .append($ "<button class='btn btn-primary'/>"
-        .text "Reset"
-        .click () =>
-          @currentIndex = 0
-          @print()
-      )
+    $ "<label>Speed</label>"
+      .appendTo sliderHome
+    @slider = $ "<input
+    type='text'
+    name='somename'
+    data-provide='slider'
+    data-slider-min='0'
+    data-slider-max='1'
+    data-slider-step='0.001'
+    data-slider-value='0.5'
+    data-slider-tooltip='show'/>"
+      .appendTo sliderHome
+      .slider()
 
 
     $ "<div class='row'/>"
       .appendTo @home
-      .append $ "<label><br/>Cache</label>"
+      .append $ "<hr><h1 class='panel-title'>Cache</h1><br/>"
 
     state = []
     for i in [0...@numSets]
@@ -220,9 +276,11 @@ powOf2Checker = (num) ->
 
 root.SimManager = class SimManager
   constructor: (@home, @simbtn, params) ->
-    $ "<div class='row'/>"
+    $ "<div class='row'>
+      <h1 class='panel-title'>Cache Settings</h1>
+    </div>
+    <br/>"
       .appendTo @home
-      .append $ "<label>Cache Settings</label>"
 
     nameDiv = $ "<div class='row'/>"
       .appendTo @home

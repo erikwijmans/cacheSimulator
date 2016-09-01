@@ -21,9 +21,11 @@
 
   width = 50;
 
+  performance.now = performance.now || date.now;
+
   root.CSim = CSim = (function() {
     function CSim(s, E, res, options) {
-      var _, accType, address, block, controlDiv, i, inner, j, k, l, len, line, newState, ref, ref1, ref2, ref3, row, set, state, tag;
+      var _, accType, address, block, btnHome, controlDiv, i, inner, j, k, l, len, line, newState, ref, ref1, ref2, ref3, row, set, sliderHome, state, tag;
       this.s = s;
       this.E = E;
       options = options != null ? options : {};
@@ -41,45 +43,76 @@
       if (this.summary != null) {
         this.summary.html("Hits: " + res['hits'] + " <br/> Misses: " + res['misses'] + " <br/> Evicts: " + res['evicts'] + " <br/> Miss Ratio: " + res['miss_rate']);
       }
-      $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Simulation Controls</label>"));
-      controlDiv = $("<div class='row'/>").appendTo(this.home);
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary' id='autobtn'/>").attr("role", "start").text("Auto").click((function(_this) {
+      $("<div class='row'/>").appendTo(this.home).append($("<hr> <h1 class='panel-title'>Simulation Controls</h1> <br/>"));
+      controlDiv = $("<div class='btn-group row'/>").appendTo(this.home);
+      btnHome = $("<div class='col-md-7'/>").appendTo(controlDiv);
+      $("<button class='btn btn-primary' id='autobtn' data-toggle='tooltip' data-title='Automatically advanced the simulation.  Use the slider to control the speed' data-placement='auto' />").attr("role", "start").text("Auto").tooltip({
+        'delay': {
+          show: 1000,
+          hide: 100
+        }
+      }).appendTo(btnHome).click((function(_this) {
         return function() {
-          var autoFunc;
-          if ($("#autobtn").attr('role') === 'start') {
+          var autoFunc, self;
+          self = $("#autobtn");
+          if (self.attr('role') === 'start') {
+            _this.lastTime = 0;
             autoFunc = function() {
               return _this.intervalID = setInterval(function() {
-                _this.next();
-                if (!_this.hasNext()) {
-                  return clearInterval(_this.intervalID);
+                var time;
+                time = 2000 - 2000 * _this.slider.slider("getValue");
+                if ((performance.now() - _this.lastTime) > time) {
+                  _this.lastTime = performance.now();
+                  return _this.next();
+                } else if (!_this.hasNext()) {
+                  clearInterval(_this.intervalID);
+                  return self.text("Auto").attr("role", "start");
                 }
-              }, 1000);
+              }, 2);
             };
             autoFunc();
-            return $("#autobtn").text("Stop").attr("role", 'stop');
+            return self.text("Stop").attr("role", 'stop');
           } else {
             clearInterval(_this.intervalID);
-            return $("#autobtn").text("Auto").attr("role", 'start');
+            return self.text("Auto").attr("role", 'start');
           }
         };
-      })(this)));
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary'/>").text("Next").click((function(_this) {
-        return function() {
-          return _this.next();
-        };
-      })(this)));
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary'/>").text("Prev").click((function(_this) {
+      })(this));
+      $("<button class='btn btn-primary' data-toggle='tooltip' data-title='Moves the simulation back one memory accesses' data-placement='auto' />").text("Prev").appendTo(btnHome).tooltip({
+        'delay': {
+          show: 1000,
+          hide: 100
+        }
+      }).click((function(_this) {
         return function() {
           return _this.prev();
         };
-      })(this)));
-      $("<div class='col-md-3'/>").appendTo(controlDiv).append($("<button class='btn btn-primary'/>").text("Reset").click((function(_this) {
+      })(this));
+      $("<button class='btn btn-primary' data-toggle='tooltip' data-title='Moves the simulation forward one memory accesses' data-placement='auto' />").text("Next").appendTo(btnHome).tooltip({
+        'delay': {
+          show: 1000,
+          hide: 100
+        }
+      }).click((function(_this) {
+        return function() {
+          return _this.next();
+        };
+      })(this));
+      $("<button class='btn btn-primary' data-toggle='tooltip' data-title='Resets the simulation' data-placement='auto' />").text("Reset").appendTo(btnHome).tooltip({
+        'delay': {
+          show: 1000,
+          hide: 100
+        }
+      }).click((function(_this) {
         return function() {
           _this.currentIndex = 0;
           return _this.print();
         };
-      })(this)));
-      $("<div class='row'/>").appendTo(this.home).append($("<label><br/>Cache</label>"));
+      })(this));
+      sliderHome = $("<div class='col-md-5'/>").appendTo(controlDiv);
+      $("<label>Speed</label>").appendTo(sliderHome);
+      this.slider = $("<input type='text' name='somename' data-provide='slider' data-slider-min='0' data-slider-max='1' data-slider-step='0.001' data-slider-value='0.5' data-slider-tooltip='show'/>").appendTo(sliderHome).slider();
+      $("<div class='row'/>").appendTo(this.home).append($("<hr><h1 class='panel-title'>Cache</h1><br/>"));
       state = [];
       for (i = j = 0, ref1 = this.numSets; 0 <= ref1 ? j < ref1 : j > ref1; i = 0 <= ref1 ? ++j : --j) {
         row = $("<div class='row panel-group'/>").appendTo(this.home);
@@ -211,7 +244,7 @@
       var inputDiv, nameDiv;
       this.home = home;
       this.simbtn = simbtn;
-      $("<div class='row'/>").appendTo(this.home).append($("<label>Cache Settings</label>"));
+      $("<div class='row'> <h1 class='panel-title'>Cache Settings</h1> </div> <br/>").appendTo(this.home);
       nameDiv = $("<div class='row'/>").appendTo(this.home);
       $("<h3 class='col-md-3 panel-title'/>").text("Number of Sets").appendTo(nameDiv);
       $("<h3 class='col-md-3 panel-title'/>").text("Bytes per Block").appendTo(nameDiv);

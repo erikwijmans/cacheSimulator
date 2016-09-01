@@ -124,7 +124,6 @@
       Cookies.set("cache_sim_save", params, {
         expires: new Date(2020, 1, 1)
       });
-      return true;
     };
     window.onunload = closer;
     return window.onbeforeunload = closer;

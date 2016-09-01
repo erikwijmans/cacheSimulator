@@ -71,7 +71,7 @@ for (int i = 0; i < #{i}; ++i) {
       i = genSize()
       j = genSize()
       b = genB()
-      type = genType
+      type = genType()
       arraySize = typeToSize[type]*i*j
 
     loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
@@ -93,12 +93,12 @@ for (int i = 0; i < #{i}; ++i) {
     genB = ->
       1 << Math.floor(Math.random()*3 + 3)
     genS = ->
-      1 << Math.floor(Math.random()*3 + 2)
+      1 << Math.floor(Math.random()*3 + 3)
     genE = ->
-      Math.floor(Math.random()*2 + 1)
+      Math.floor(Math.random()*4 + 1)
 
     genSize = ->
-      2*(Math.floor Math.random()*9 + 7)
+      Math.floor(Math.random()*16) + 15
 
     i = genSize()
     j = genSize()
@@ -111,7 +111,7 @@ for (int i = 0; i < #{i}; ++i) {
       i = genSize()
       j = genSize()
       b = genB()
-      type = genType
+      type = genType()
       arraySize = typeToSize[type]*i*j
 
     loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]

@@ -77,7 +77,7 @@
         i = genSize();
         j = genSize();
         b = genB();
-        type = genType;
+        type = genType();
         arraySize = typeToSize[type] * i * j;
       }
       loops = ["for (int i = 0; i < " + i + "; ++i)", "for (int j = 0; j < " + j + "; ++j)"];
@@ -97,13 +97,13 @@
         return 1 << Math.floor(Math.random() * 3 + 3);
       };
       genS = function() {
-        return 1 << Math.floor(Math.random() * 3 + 2);
+        return 1 << Math.floor(Math.random() * 3 + 3);
       };
       genE = function() {
-        return Math.floor(Math.random() * 2 + 1);
+        return Math.floor(Math.random() * 4 + 1);
       };
       genSize = function() {
-        return 2 * (Math.floor(Math.random() * 9 + 7));
+        return Math.floor(Math.random() * 16) + 15;
       };
       i = genSize();
       j = genSize();
@@ -114,7 +114,7 @@
         i = genSize();
         j = genSize();
         b = genB();
-        type = genType;
+        type = genType();
         arraySize = typeToSize[type] * i * j;
       }
       loops = ["for (int i = 0; i < " + i + "; ++i)", "for (int j = 0; j < " + j + "; ++j)"];
