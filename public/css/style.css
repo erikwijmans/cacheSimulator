@@ -35,3 +35,7 @@ textarea {
   overflow: scroll;
   max-height: 80%;
 }
+
+[class*="col-"] {
+  margin-bottom: 20px;
+}
