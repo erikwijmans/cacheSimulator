@@ -36,13 +36,14 @@ ajaxReq = (url, data, cb) ->
 root.getTrace = getTrace = (code, cb) ->
  ajaxReq "/trace", JSON.stringify(code), cb
 
-root.getSim = getSim = (trace, cacheParams, cb) ->
+root.getSim = getSim = (trace, cacheParams, style, cb) ->
   ajaxReq "/simulate", JSON.stringify(
     trace: trace
     s: cacheParams['s']
     b: cacheParams['b']
     E: cacheParams['E']
     memSize: cacheParams['memSize']
+    style: style
   ), cb
 
 

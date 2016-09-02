@@ -24,13 +24,14 @@
     return ajaxReq("/trace", JSON.stringify(code), cb);
   };
 
-  root.getSim = getSim = function(trace, cacheParams, cb) {
+  root.getSim = getSim = function(trace, cacheParams, style, cb) {
     return ajaxReq("/simulate", JSON.stringify({
       trace: trace,
       s: cacheParams['s'],
       b: cacheParams['b'],
       E: cacheParams['E'],
-      memSize: cacheParams['memSize']
+      memSize: cacheParams['memSize'],
+      style: style
     }), cb);
   };
 

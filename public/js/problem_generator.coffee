@@ -15,14 +15,14 @@ genType = ->
 root.Generator = class Generator
   @basic: ->
     genB = ->
-      1 << Math.floor(Math.random()*2 + 2)
+      1 << Math.floor(Math.random()*2 + 3)
     genS = ->
-      1 << Math.floor(Math.random()*2 + 2)
+      1 << Math.floor(Math.random()*3 + 1)
     genE = ->
       1
 
     genSize = ->
-      2*(Math.floor Math.random()*9 + 2)
+      2*(Math.floor Math.random()*16 + 5)
 
     i = genSize()
     index = Math.floor Math.random() * 4

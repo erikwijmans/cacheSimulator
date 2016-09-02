@@ -20,7 +20,7 @@ def trace():
 @app.route("/simulate", methods=['POST'])
 def simulate():
   req = request.json
-  sim = CSim(req['s'], req['E'], req['b'], req['memSize'], req['trace'])
+  sim = CSim(req['s'], req['E'], req['b'], req['memSize'], req['trace'], req['style'])
 
   return dumps(sim.get_res())
 

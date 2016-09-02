@@ -3,10 +3,12 @@ from enum import Enum
 from json import dumps
 
 ACC_TYPE = Enum("ACC_TYPE", "hit miss evict")
+TRACE_TYPE = Enum("TRACE_TYPE", "auto valgrid")
 
 class CSim:
-  def __init__(self, s, E, b, mem_bits, trace=None):
-    self.s, self.E, self.b, self.mem_bits = s, E, b, mem_bits
+  def __init__(self, s, E, b, mem_bits, trace=None, style=TRACE_TYPE.auto):
+    self.s, self.E, self.b, self.mem_bits, self.style = s, E, b, mem_bits, style
+
     self.num_sets = 1 << s
     self.tag_offset = s + b
     self.set_offset = b
@@ -62,9 +64,24 @@ class CSim:
 
   def simulate(self, line):
     self.time += 1
-    address = int(line, 16)
+
+    address = 0
+    valgrind_type = "S"
+    if self.style == TRACE_TYPE.valgrid.value:
+      if line[1] != "L" and line[1] != "M" and line[1] != "S":
+        return
+
+      line = line.split(",")[0].strip()
+      tmp = line.split(" ")
+
+      valgrind_type = tmp[0]
+      address = int(tmp[1], 16)
+    else:
+      address = int(line, 16)
+
     tag = address >> self.tag_offset
     set_index = (address >> self.set_offset) & self.set_mask
+    willEvict = True
 
     for i in range(self.E):
       if not self.mem[self.E*set_index + i]['valid']:
@@ -75,25 +92,31 @@ class CSim:
         }
 
         self.__post_res(address, self.E*set_index + i, tag, set_index, ACC_TYPE.miss)
-        return
+        willEvict = False
+        break
       elif self.mem[self.E*set_index + i]['tag'] == tag:
         self.mem[self.E*set_index + i]['u'] = self.time
 
         self.__post_res(address, self.E*set_index + i, tag, set_index, ACC_TYPE.hit)
-        return
+        willEvict = False
+        break
 
-    lru = int(1e9)
-    block = 0
+    if willEvict:
+      lru = int(1e9)
+      block = 0
 
-    for i in range(self.E):
-      if self.mem[self.E*set_index + i]['u'] < lru:
-        block = self.E*set_index + i
-        lru = self.mem[block]['u']
+      for i in range(self.E):
+        if self.mem[self.E*set_index + i]['u'] < lru:
+          block = self.E*set_index + i
+          lru = self.mem[block]['u']
 
 
-    self.mem[block]['u'] = self.time
-    self.mem[block]['tag'] = tag
-    self.__post_res(address, block, tag, set_index, ACC_TYPE.evict)
+      self.mem[block]['u'] = self.time
+      self.mem[block]['tag'] = tag
+      self.__post_res(address, block, tag, set_index, ACC_TYPE.evict)
+
+    if valgrind_type == 'M':
+      self.__post_res(address, self.E*set_index + i, tag, set_index, ACC_TYPE.hit)
 
 
 if __name__ == '__main__':

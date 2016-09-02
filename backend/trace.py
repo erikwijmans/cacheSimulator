@@ -44,7 +44,8 @@ def handle_struct(source_code):
   return out
 
 class Tracer:
-  def __init__(self, source, working_dir="."):
+  def __init__(self, source, working_dir=".", sandbox=""):
+    self.sandbox = sandbox
     self.error = False
     self.prefix = ""
     if __name__ != "__main__":
@@ -100,7 +101,7 @@ int main(int argc, char** argv) {''' \
     subprocess.check_call(shlex.split("g++ -std=gnu++11 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
 
     with open("{}.trace".format(self.fileno), "w") as outfile:
-      subprocess.check_call(shlex.split("{}".format(self.fileno)), stdout=outfile)
+      subprocess.check_call(shlex.split("{} {}".format(self.sandbox, self.fileno)), stdout=outfile)
 
 
     with open("{}.trace".format(self.fileno)) as file:

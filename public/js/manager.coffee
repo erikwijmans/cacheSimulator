@@ -1,20 +1,24 @@
 $ ->
+  TRACE_TYPE = Object.freeze
+    auto: 1
+    valgrind: 2
+
   class Manager
     constructor: ->
 
-      div1 = $ "<div class='col-lg-3'/>"
+      div1 = $ "<div class='col-md-3'/>"
         .appendTo '#content'
-      @cacheHome = $ "<div class='col-lg-4 col-lg-offset-1'/>"
+      @cacheHome = $ "<div class='col-md-4 col-md-offset-1'/>"
         .appendTo $ '#content'
 
 
-      logs = $ "<div class='col-lg-3 col-lg-offset-1'>
+      logs = $ "<div class='col-md-3 col-md-offset-1'>
         <div class='row'/>
       </div>"
         .appendTo $ "#content"
         .find $ ".row"
 
-      col = $ "<div class='col-md-6'/>"
+      col = $ "<div class='col-sm-6'/>"
         .appendTo logs
       @logHome = $ "<div class='panel panel-default'>
             <div class='panel-heading'>
@@ -27,7 +31,7 @@ $ ->
         .find $ ".panel-body"
 
 
-      col = $ "<div class='col-md-6'/>"
+      col = $ "<div class='col-sm-6'/>"
         .appendTo logs
       @summaryHome = $ "<div class='panel panel-default'>
             <div class='panel-heading'>
@@ -39,9 +43,11 @@ $ ->
         .appendTo col
         .find $ ".panel-body"
 
+      $ "<label>Generator Difficulty</label><br/>"
+        .appendTo div1
 
       $ "<select class='selectpicker'
-        data-width='fit'
+        data-width='auto'
         id='difficulty'>
           <optgroup label='Problem Difficulty'>
             <option>Basic</option>
@@ -92,10 +98,11 @@ $ ->
 
       @traceHome = $ "<textarea class='form-control' rows='20' cols='50'/>"
         .attr 'placeholder', "Trace goes here (will be automatically filled if code is traced)"
+
       @simulator = null
 
       $ "<button class='btn btn-primary'/>"
-        .text "Trace Code"
+        .text "Generate Memory Trace"
         .appendTo div1
         .click () =>
           code = @codeHome.val()
@@ -106,9 +113,22 @@ $ ->
               @traceHome.text ("0x#{t}" for t in msg).join("\n")
             else
               @traceHome.text "Syntax Error: \n#{msg}"
+              @traceStyle.selectpicker "val", "Auto Generated"
 
 
       @traceHome.appendTo div1
+
+      $ "<label>Trace Type</label><br/>"
+        .appendTo div1
+
+      @traceStyle = $ "<select class='selectpicker'
+      data-width='auto'>
+          <optgroup label='Trace Type'>
+            <option>Auto Generated</option>
+            <option>Valgrind</option>
+          </optgroup>
+        </select>"
+        .appendTo div1
 
       @simbtn = $ "<button class='btn btn-primary'/>"
         .text "Simulate"
@@ -118,8 +138,17 @@ $ ->
             return
           trace = @traceHome.val().split("\n")
           params = @simManager.getParams()
-          console.log params
-          getSim trace, params, (sim) =>
+          style = @traceStyle.val()
+          console.log style
+          switch style
+            when "Auto Generated"
+              styleCode = TRACE_TYPE.auto
+            when "Valgrind"
+              styleCode = TRACE_TYPE.valgrind
+            else
+              console.log "Unsupported trace style: #{style}"
+
+          getSim trace, params, styleCode, (sim) =>
             if @simulator?
               @simulator.destroy()
 

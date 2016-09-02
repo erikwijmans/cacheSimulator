@@ -45,7 +45,7 @@
       }
       $("<div class='row'/>").appendTo(this.home).append($("<hr> <h1 class='panel-title'>Simulation Controls</h1> <br/>"));
       controlDiv = $("<div class='btn-group row'/>").appendTo(this.home);
-      btnHome = $("<div class='col-md-7'/>").appendTo(controlDiv);
+      btnHome = $("<div class='col-sm-7'/>").appendTo(controlDiv);
       $("<button class='btn btn-primary' id='autobtn' data-toggle='tooltip' data-title='Automatically advanced the simulation.  Use the slider to control the speed' data-placement='auto' />").attr("role", "start").text("Auto").tooltip({
         'delay': {
           show: 1000,
@@ -109,17 +109,17 @@
           return _this.print();
         };
       })(this));
-      sliderHome = $("<div class='col-md-5'/>").appendTo(controlDiv);
+      sliderHome = $("<div class='col-sm-5'/>").appendTo(controlDiv);
       $("<label>Speed</label>").appendTo(sliderHome);
       this.slider = $("<input type='text' name='somename' data-provide='slider' data-slider-min='0' data-slider-max='1' data-slider-step='0.001' data-slider-value='0.5' data-slider-tooltip='show'/>").appendTo(sliderHome).slider();
       $("<div class='row'/>").appendTo(this.home).append($("<hr><h1 class='panel-title'>Cache</h1><br/>"));
       state = [];
       for (i = j = 0, ref1 = this.numSets; 0 <= ref1 ? j < ref1 : j > ref1; i = 0 <= ref1 ? ++j : --j) {
         row = $("<div class='row panel-group'/>").appendTo(this.home);
-        $("<p class='col-md-2' style='margin-top: 15px;'> Set " + i + "</p>").appendTo(row);
-        inner = $("<div class='row col-md-10'/>").appendTo(row);
+        $("<p class='col-sm-2' style='margin-top: 15px;'> Set " + i + "</p>").appendTo(row);
+        inner = $("<div class='row col-sm-10'/>").appendTo(row);
         for (_ = k = 0, ref2 = this.E; 0 <= ref2 ? k < ref2 : k > ref2; _ = 0 <= ref2 ? ++k : --k) {
-          block = $("<div class='col-md-3'> <div class='panel panel-default empty'> <div class='panel-body'/> </div> </div>").appendTo(inner).find($(".panel-body")).text("-1");
+          block = $("<div class='col-sm-3'> <div class='panel panel-default empty'> <div class='panel-body'/> </div> </div>").appendTo(inner).find($(".panel-body")).text("-1");
           this.cache.push(block);
           state.push({
             tag: -1,
@@ -246,10 +246,10 @@
       this.simbtn = simbtn;
       $("<div class='row'> <h1 class='panel-title'>Cache Settings</h1> </div> <br/>").appendTo(this.home);
       nameDiv = $("<div class='row'/>").appendTo(this.home);
-      $("<h3 class='col-md-3 panel-title'/>").text("Number of Sets").appendTo(nameDiv);
-      $("<h3 class='col-md-3 panel-title'/>").text("Bytes per Block").appendTo(nameDiv);
-      $("<h3 class='col-md-3 panel-title'/>").text("Associativity").appendTo(nameDiv);
-      $("<h3 class='col-md-3 panel-title'/>").text("Memory Size").appendTo(nameDiv);
+      $("<h3 class='col-sm-3 panel-title'/>").text("Number of Sets").appendTo(nameDiv);
+      $("<h3 class='col-sm-3 panel-title'/>").text("Bytes per Block").appendTo(nameDiv);
+      $("<h3 class='col-sm-3 panel-title'/>").text("Associativity").appendTo(nameDiv);
+      $("<h3 class='col-sm-3 panel-title'/>").text("Memory Size").appendTo(nameDiv);
       inputDiv = $("<div class='row'/>").appendTo(this.home);
       params = params != null ? params : {};
       this.checkDir = {};
@@ -262,7 +262,7 @@
           return STATUS.OK;
         }
       });
-      $("<div class='col-md-3'/>").appendTo(inputDiv).append($("<input type='text' id='memSize'/>").val("64").attr("style", "width: 100%;"));
+      $("<div class='col-sm-3'/>").appendTo(inputDiv).append($("<input type='text' id='memSize'/>").val("64").attr("style", "width: 100%;"));
     }
 
     SimManager.prototype.getParams = function() {
@@ -281,7 +281,7 @@
     };
 
     SimManager.prototype.createCheckedInput = function(id, initialVal, parent, checker) {
-      return $("<div class='col-md-3'/>").appendTo(parent).append($("<input type='text' id='" + id + "' data-toggle='tooltip' data-placement='auto' data-trigger='manual' />").tooltip().val(initialVal).attr("style", "width: 100%;").on('input change', (function(_this) {
+      return $("<div class='col-sm-3'/>").appendTo(parent).append($("<input type='text' id='" + id + "' data-toggle='tooltip' data-placement='auto' data-trigger='manual' />").tooltip().val(initialVal).attr("style", "width: 100%;").on('input change', (function(_this) {
         return function() {
           return _this.checkInput(id, checker);
         };

@@ -23,16 +23,16 @@
     Generator.basic = function() {
       var arraySize, b, code, genB, genE, genS, genSize, i, index, type;
       genB = function() {
-        return 1 << Math.floor(Math.random() * 2 + 2);
+        return 1 << Math.floor(Math.random() * 2 + 3);
       };
       genS = function() {
-        return 1 << Math.floor(Math.random() * 2 + 2);
+        return 1 << Math.floor(Math.random() * 3 + 1);
       };
       genE = function() {
         return 1;
       };
       genSize = function() {
-        return 2 * (Math.floor(Math.random() * 9 + 2));
+        return 2 * (Math.floor(Math.random() * 16 + 5));
       };
       i = genSize();
       index = Math.floor(Math.random() * 4);

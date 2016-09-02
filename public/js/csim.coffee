@@ -48,7 +48,7 @@ root.CSim = class CSim
     controlDiv = $ "<div class='btn-group row'/>"
       .appendTo @home
 
-    btnHome = $ "<div class='col-md-7'/>"
+    btnHome = $ "<div class='col-sm-7'/>"
       .appendTo controlDiv
 
     $ "<button class='btn btn-primary' id='autobtn'
@@ -132,7 +132,7 @@ root.CSim = class CSim
         @currentIndex = 0
         @print()
 
-    sliderHome = $ "<div class='col-md-5'/>"
+    sliderHome = $ "<div class='col-sm-5'/>"
       .appendTo controlDiv
 
     $ "<label>Speed</label>"
@@ -158,16 +158,16 @@ root.CSim = class CSim
     for i in [0...@numSets]
       row = $("<div class='row panel-group'/>").appendTo @home
 
-      $ "<p class='col-md-2'
+      $ "<p class='col-sm-2'
         style='margin-top: 15px;'>
         Set #{i}</p>"
         .appendTo row
 
-      inner = $ "<div class='row col-md-10'/>"
+      inner = $ "<div class='row col-sm-10'/>"
         .appendTo row
 
       for _ in [0...@E]
-        block = $ "<div class='col-md-3'>
+        block = $ "<div class='col-sm-3'>
           <div class='panel panel-default empty'>
             <div class='panel-body'/>
           </div>
@@ -285,19 +285,19 @@ root.SimManager = class SimManager
     nameDiv = $ "<div class='row'/>"
       .appendTo @home
 
-    $ "<h3 class='col-md-3 panel-title'/>"
+    $ "<h3 class='col-sm-3 panel-title'/>"
       .text "Number of Sets"
       .appendTo nameDiv
 
-    $ "<h3 class='col-md-3 panel-title'/>"
+    $ "<h3 class='col-sm-3 panel-title'/>"
       .text "Bytes per Block"
       .appendTo nameDiv
 
-    $ "<h3 class='col-md-3 panel-title'/>"
+    $ "<h3 class='col-sm-3 panel-title'/>"
       .text "Associativity"
       .appendTo nameDiv
 
-    $ "<h3 class='col-md-3 panel-title'/>"
+    $ "<h3 class='col-sm-3 panel-title'/>"
       .text "Memory Size"
       .appendTo nameDiv
 
@@ -313,7 +313,7 @@ root.SimManager = class SimManager
       if isNaN(val) or val is 0 then STATUS.nan else STATUS.OK
 
 
-    $ "<div class='col-md-3'/>"
+    $ "<div class='col-sm-3'/>"
       .appendTo inputDiv
       .append($ "<input type='text' id='memSize'/>"
         .val "64"
@@ -338,7 +338,7 @@ root.SimManager = class SimManager
       .trigger "change"
 
   createCheckedInput: (id, initialVal, parent, checker) ->
-    $ "<div class='col-md-3'/>"
+    $ "<div class='col-sm-3'/>"
       .appendTo parent
       .append($ "<input type='text' id='#{id}'
                 data-toggle='tooltip'
