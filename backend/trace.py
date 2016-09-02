@@ -88,7 +88,7 @@ class Tracer:
       source_code[i] = line
 
 
-    source = '''#include "''' + self.prefix + '''ArrayTracer.hpp"
+    source = '''#include <ArrayTracer.hpp>
 int main(int argc, char** argv) {''' \
       + ";".join(source_code) + '''  return 0;
 }'''
