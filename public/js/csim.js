@@ -46,7 +46,7 @@
       $("<div class='row'/>").appendTo(this.home).append($("<hr> <h1 class='panel-title'>Simulation Controls</h1> <br/>"));
       controlDiv = $("<div class='btn-group row'/>").appendTo(this.home);
       btnHome = $("<div class='col-sm-7'/>").appendTo(controlDiv);
-      $("<button class='btn btn-primary' id='autobtn' data-toggle='tooltip' data-title='Automatically advanced the simulation.  Use the slider to control the speed' data-placement='auto' />").attr("role", "start").text("Auto").tooltip({
+      $("<button class='btn btn-primary' id='autobtn' data-toggle='tooltip' data-title='Automatically advanced the simulation.  Use the slider to control the speed' data-placement='auto' />").attr("role", "play").text("Play").tooltip({
         'delay': {
           show: 1000,
           hide: 100
@@ -55,7 +55,7 @@
         return function() {
           var autoFunc, self;
           self = $("#autobtn");
-          if (self.attr('role') === 'start') {
+          if (self.attr('role') === 'play') {
             _this.lastTime = 0;
             autoFunc = function() {
               return _this.intervalID = setInterval(function() {
@@ -66,15 +66,15 @@
                   return _this.next();
                 } else if (!_this.hasNext()) {
                   clearInterval(_this.intervalID);
-                  return self.text("Auto").attr("role", "start");
+                  return self.text("Play").attr("role", "play");
                 }
               }, 2);
             };
             autoFunc();
-            return self.text("Stop").attr("role", 'stop');
+            return self.text("Pause").attr("role", 'pause');
           } else {
             clearInterval(_this.intervalID);
-            return self.text("Auto").attr("role", 'start');
+            return self.text("Play").attr("role", 'play');
           }
         };
       })(this));

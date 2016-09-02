@@ -56,8 +56,8 @@ root.CSim = class CSim
         data-title='Automatically advanced the simulation.  Use the slider to control the speed'
         data-placement='auto'
     />"
-      .attr "role", "start"
-      .text "Auto"
+      .attr "role", "play"
+      .text "Play"
       .tooltip('delay':
         show: 1000
         hide: 100
@@ -65,7 +65,7 @@ root.CSim = class CSim
       .appendTo btnHome
       .click () =>
         self = $("#autobtn")
-        if self.attr('role') is 'start'
+        if self.attr('role') is 'play'
           @lastTime = 0
           autoFunc = () =>
             @intervalID = setInterval () =>
@@ -75,18 +75,18 @@ root.CSim = class CSim
                 @next()
               else if not @hasNext()
                 clearInterval @intervalID
-                self.text "Auto"
-                  .attr "role", "start"
+                self.text "Play"
+                  .attr "role", "play"
             , 2
 
           autoFunc()
 
-          self.text "Stop"
-            .attr "role", 'stop'
+          self.text "Pause"
+            .attr "role", 'pause'
         else
           clearInterval @intervalID
-          self.text "Auto"
-            .attr "role", 'start'
+          self.text "Play"
+            .attr "role", 'play'
 
     $ "<button class='btn btn-primary'
       data-toggle='tooltip'

@@ -111,9 +111,9 @@ $ ->
             msg = res['msg']
             if not error
               @traceHome.text ("0x#{t}" for t in msg).join("\n")
+              @traceStyle.selectpicker "val", "Auto Generated"
             else
               @traceHome.text "Syntax Error: \n#{msg}"
-              @traceStyle.selectpicker "val", "Auto Generated"
 
 
       @traceHome.appendTo div1

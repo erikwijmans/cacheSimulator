@@ -67,7 +67,7 @@
               error = res['error'];
               msg = res['msg'];
               if (!error) {
-                return _this.traceHome.text(((function() {
+                _this.traceHome.text(((function() {
                   var i, len, results;
                   results = [];
                   for (i = 0, len = msg.length; i < len; i++) {
@@ -76,9 +76,9 @@
                   }
                   return results;
                 })()).join("\n"));
-              } else {
-                _this.traceHome.text("Syntax Error: \n" + msg);
                 return _this.traceStyle.selectpicker("val", "Auto Generated");
+              } else {
+                return _this.traceHome.text("Syntax Error: \n" + msg);
               }
             });
           };
