@@ -21,7 +21,7 @@
     function Generator() {}
 
     Generator.basic = function() {
-      var arraySize, b, code, genB, genE, genS, genSize, i, index, type;
+      var arraySize, b, code, genB, genE, genS, genSize, i, type;
       genB = function() {
         return 1 << Math.floor(Math.random() * 2 + 3);
       };
@@ -35,7 +35,6 @@
         return 2 * (Math.floor(Math.random() * 16 + 5));
       };
       i = genSize();
-      index = Math.floor(Math.random() * 4);
       type = genType();
       arraySize = i * typeToSize[type];
       b = genB();

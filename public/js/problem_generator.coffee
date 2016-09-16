@@ -25,16 +25,16 @@ root.Generator = class Generator
       2*(Math.floor Math.random()*16 + 5)
 
     i = genSize()
-    index = Math.floor Math.random() * 4
     type = genType()
+
     arraySize = i*typeToSize[type]
 
     b = genB()
     while arraySize % b != 0
       i = genSize()
       b = genB()
-
       type = genType()
+
       arraySize = i*typeToSize[type]
 
 

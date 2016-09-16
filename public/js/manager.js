@@ -110,7 +110,7 @@
               if (_this.simulator != null) {
                 _this.simulator.destroy();
               }
-              return _this.simulator = new CSim(params['s'], params['E'], sim, {
+              return _this.simulator = new CSim(params, sim, {
                 parent: _this.cacheHome,
                 log: _this.logHome,
                 summary: _this.summaryHome

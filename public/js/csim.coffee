@@ -10,18 +10,23 @@ nameMap =
   2: 'Miss'
   3: 'Evict'
 
-height = 50
-width = 50
+
+baseTime = 2000
+range = Math.exp 2
+minVal = Math.log baseTime/range
+maxVal = Math.log baseTime * range
+scale = (maxVal - minVal)
+
 
 performance.now = (performance.now or date.now)
 
 root.CSim = class CSim
-  constructor: (@s, @E, res, options) ->
+  constructor: (@params, res, options) ->
     options = options ? {}
     @parent = options['parent'] ? $ 'body'
     @log = options['log']
     @summary = options['summary']
-    @numSets = (1 << @s)
+    @numSets = (1 << @params.s)
     @currentIndex = 0
     @cache = []
     @out = []
@@ -39,11 +44,11 @@ root.CSim = class CSim
     Miss Ratio: #{res['miss_rate']}"
 
 
-    $ "<div class='row'/>"
+    $ "<div class='row'> <hr>
+        <h1 class='panel-title'>Simulation Controls</h1>
+        <br/>
+      </div>"
       .appendTo @home
-      .append $ "<hr>
-      <h1 class='panel-title'>Simulation Controls</h1>
-      <br/>"
 
     controlDiv = $ "<div class='btn-group row'/>"
       .appendTo @home
@@ -51,11 +56,13 @@ root.CSim = class CSim
     btnHome = $ "<div class='col-sm-7'/>"
       .appendTo controlDiv
 
-    $ "<button class='btn btn-primary' id='autobtn'
+    $ "<button
+        class='btn btn-primary'
+        id='autobtn'
         data-toggle='tooltip'
         data-title='Automatically advanced the simulation.  Use the slider to control the speed'
         data-placement='auto'
-    />"
+      />"
       .attr "role", "play"
       .text "Play"
       .tooltip('delay':
@@ -69,7 +76,9 @@ root.CSim = class CSim
           @lastTime = 0
           autoFunc = () =>
             @intervalID = setInterval () =>
-              time = 2000 - 2000*@slider.slider("getValue")
+              sliderval = @slider.slider "getValue"
+              time = Math.exp(minVal + sliderval * scale)
+
               if (performance.now() - @lastTime) > time
                 @lastTime = performance.now()
                 @next()
@@ -88,11 +97,12 @@ root.CSim = class CSim
           self.text "Play"
             .attr "role", 'play'
 
-    $ "<button class='btn btn-primary'
-      data-toggle='tooltip'
-      data-title='Moves the simulation back one memory accesses'
-      data-placement='auto'
-    />"
+    $ "<button
+        class='btn btn-primary'
+        data-toggle='tooltip'
+        data-title='Moves the simulation back one memory accesses'
+        data-placement='auto'
+      />"
       .text "Prev"
       .appendTo btnHome
       .tooltip('delay':
@@ -102,11 +112,12 @@ root.CSim = class CSim
       .click () =>
         @prev()
 
-    $ "<button class='btn btn-primary'
-      data-toggle='tooltip'
-      data-title='Moves the simulation forward one memory accesses'
-      data-placement='auto'
-    />"
+    $ "<button
+        class='btn btn-primary'
+        data-toggle='tooltip'
+        data-title='Moves the simulation forward one memory accesses'
+        data-placement='auto'
+      />"
       .text "Next"
       .appendTo btnHome
       .tooltip('delay':
@@ -117,11 +128,12 @@ root.CSim = class CSim
         @next()
 
 
-    $ "<button class='btn btn-primary'
-      data-toggle='tooltip'
-      data-title='Resets the simulation'
-      data-placement='auto'
-    />"
+    $ "<button
+        class='btn btn-primary'
+        data-toggle='tooltip'
+        data-title='Resets the simulation'
+        data-placement='auto'
+      />"
       .text "Reset"
       .appendTo btnHome
       .tooltip('delay':
@@ -138,14 +150,15 @@ root.CSim = class CSim
     $ "<label>Speed</label>"
       .appendTo sliderHome
     @slider = $ "<input
-    type='text'
-    name='somename'
-    data-provide='slider'
-    data-slider-min='0'
-    data-slider-max='1'
-    data-slider-step='0.001'
-    data-slider-value='0.5'
-    data-slider-tooltip='show'/>"
+                  type='text'
+                  name='somename'
+                  data-provide='slider'
+                  data-slider-min='0'
+                  data-slider-max='1'
+                  data-slider-step='0.001'
+                  data-slider-value='0.5'
+                  data-slider-tooltip='show'
+                />"
       .appendTo sliderHome
       .slider()
 
@@ -158,15 +171,15 @@ root.CSim = class CSim
     for i in [0...@numSets]
       row = $("<div class='row panel-group'/>").appendTo @home
 
-      $ "<p class='col-sm-2'
-        style='margin-top: 15px;'>
-        Set #{i}</p>"
+      $ "<p class='col-sm-2' style='margin-top: 15px;'>
+          Set #{i}
+        </p>"
         .appendTo row
 
       inner = $ "<div class='row col-sm-10'/>"
         .appendTo row
 
-      for _ in [0...@E]
+      for _ in [0...@params.E]
         block = $ "<div class='col-sm-3'>
           <div class='panel panel-default empty'>
             <div class='panel-body'/>
@@ -174,7 +187,7 @@ root.CSim = class CSim
         </div>"
           .appendTo inner
           .find $ ".panel-body"
-          .text "-1"
+          .text "Empty"
 
 
         @cache.push block
@@ -199,12 +212,15 @@ root.CSim = class CSim
         <strong>Tag:</strong> 0x#{tag.toString 16} <strong>Set:</strong> #{set}
         <strong>#{nameMap[accType]}</strong>""".split("\n").join("<br/>")
 
+      #Deep copy of array
       newState = @states[@states.length - 1][..]
       newState[block] =
         tag: tag
         type: accType
+        address: address
 
       @states.push newState
+      @blockSize = (1 << @params.b)
 
   print: ->
     if @log?
@@ -216,7 +232,7 @@ root.CSim = class CSim
 
     for b, i in @states[@currentIndex]
       @cache[i].parent().removeClass "hit miss evict empty"
-      @cache[i].text if b.tag != -1 then "0x#{b.tag.toString 16}" else b.tag
+      @cache[i].text if b.tag != -1 then "0x#{b.address.toString 16} to 0x#{(b.address + @blockSize - 1).toString 16}" else "Empty"
       switch b.type
         when 0
           @cache[i].parent().addClass "empty"
@@ -277,9 +293,9 @@ powOf2Checker = (num) ->
 root.SimManager = class SimManager
   constructor: (@home, @simbtn, params) ->
     $ "<div class='row'>
-      <h1 class='panel-title'>Cache Settings</h1>
-    </div>
-    <br/>"
+        <h1 class='panel-title'>Cache Settings</h1>
+      </div>
+      <br/>"
       .appendTo @home
 
     nameDiv = $ "<div class='row'/>"

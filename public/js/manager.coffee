@@ -152,7 +152,7 @@ $ ->
             if @simulator?
               @simulator.destroy()
 
-            @simulator = new CSim params['s'], params['E'], sim,
+            @simulator = new CSim params, sim,
               parent: @cacheHome
               log: @logHome
               summary: @summaryHome
