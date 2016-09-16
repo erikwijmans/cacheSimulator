@@ -11,7 +11,7 @@
       dataType: 'json',
       contentType: 'application/json; charset=UTF-8',
       type: "POST",
-      url: url,
+      url: "http://ec2-52-10-240-194.us-west-2.compute.amazonaws.com" + url,
       data: data,
       success: cb,
       error: function(err) {
