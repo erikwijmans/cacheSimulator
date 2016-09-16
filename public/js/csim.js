@@ -51,7 +51,7 @@
       $("<div class='row'> <hr> <h1 class='panel-title'>Simulation Controls</h1> <br/> </div>").appendTo(this.home);
       controlDiv = $("<div class='btn-group row'/>").appendTo(this.home);
       btnHome = $("<div class='col-sm-7'/>").appendTo(controlDiv);
-      $("<button class='btn btn-primary' id='autobtn' data-toggle='tooltip' data-title='Automatically advanced the simulation.  Use the slider to control the speed' data-placement='auto' />").attr("role", "play").text("Play").tooltip({
+      $("<button class='btn btn-primary' id='autobtn' data-toggle='tooltip' data-title='Automatically advanced the simulation. Use the slider to control speed' data-placement='auto' />").attr("role", "play").text("Play").tooltip({
         'delay': {
           show: 1000,
           hide: 100
@@ -104,7 +104,7 @@
           return _this.next();
         };
       })(this));
-      $("<button class='btn btn-primary' data-toggle='tooltip' data-title='Resets the simulation' data-placement='auto' />").text("Reset").appendTo(btnHome).tooltip({
+      $("<button class='btn btn-primary' data-toggle='tooltip' data-title='Resets the simulation back to accesses 0' data-placement='auto' />").text("Reset").appendTo(btnHome).tooltip({
         'delay': {
           show: 1000,
           hide: 100

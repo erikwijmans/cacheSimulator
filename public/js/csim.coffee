@@ -60,7 +60,8 @@ root.CSim = class CSim
         class='btn btn-primary'
         id='autobtn'
         data-toggle='tooltip'
-        data-title='Automatically advanced the simulation.  Use the slider to control the speed'
+        data-title='Automatically advanced the simulation.
+  Use the slider to control speed'
         data-placement='auto'
       />"
       .attr "role", "play"
@@ -131,7 +132,7 @@ root.CSim = class CSim
     $ "<button
         class='btn btn-primary'
         data-toggle='tooltip'
-        data-title='Resets the simulation'
+        data-title='Resets the simulation back to accesses 0'
         data-placement='auto'
       />"
       .text "Reset"

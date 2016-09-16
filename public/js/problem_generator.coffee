@@ -8,16 +8,32 @@ typeToSize =
 
 genType = ->
   index = Math.floor Math.random() * 4
-  ['char', 'short', 'int', 'long'][index]
+  type = ['char', 'short', 'int', 'long'][index]
 
+  type: type
+  size: typeToSize[type]
 
+genStruct = ->
+  type1 = genType()
+  type2 = genType()
+
+  padding = if type1['type'] is type2['type'] then 0 else type2['size'] - (type1['size'] % type2['size'])
+
+  structSize = type1['size'] + padding + type2['size']
+
+  type: """struct {
+    #{type1['type']} a;
+    #{type2['type']} b;
+  }"""
+  size: structSize
 
 root.Generator = class Generator
-  @basic: ->
+  @basic: (struct) ->
+    struct = struct ? false
     genB = ->
       1 << Math.floor(Math.random()*2 + 3)
     genS = ->
-      1 << Math.floor(Math.random()*3 + 1)
+      1 << Math.floor(Math.random()*2 + 2)
     genE = ->
       1
 
@@ -25,23 +41,31 @@ root.Generator = class Generator
       2*(Math.floor Math.random()*16 + 5)
 
     i = genSize()
-    type = genType()
+    arrType = if struct then genStruct() else genType()
 
-    arraySize = i*typeToSize[type]
+    arraySize = i*arrType['size']
 
     b = genB()
     while arraySize % b != 0
       i = genSize()
       b = genB()
-      type = genType()
+      arrType = if struct then genStruct() else genType()
 
-      arraySize = i*typeToSize[type]
+      arraySize = arraySize = i*arrType['size']
 
-
-    code = """#{type} array[#{i}];
+    code = ""
+    if not struct
+      code = """#{arrType['type']} array[#{i}];
 
 for (int i = 0; i < #{i}; ++i) {
   array[i] = 10;
+}"""
+    else
+      code = """#{arrType['type']} array[#{i}];
+
+for (int i = 0; i < #{i}; ++i) {
+  array[i].a = 10;
+  array[i].b = 10;
 }"""
 
     code: code
@@ -49,7 +73,8 @@ for (int i = 0; i < #{i}; ++i) {
     b: b
     E: genE()
 
-  @easy: ->
+  @easy: (struct) ->
+    struct = struct ? false
     genB = ->
       1 << Math.floor(Math.random()*3 + 3)
     genS = ->
@@ -63,33 +88,44 @@ for (int i = 0; i < #{i}; ++i) {
     i = genSize()
     j = genSize()
 
-    type = genType()
-    arraySize = typeToSize[type]*i*j
+    arrType = if struct then genStruct() else genType()
+    arraySize = arrType['size']*i*j
     b = genB()
 
     while arraySize % b != 0
       i = genSize()
       j = genSize()
       b = genB()
-      type = genType()
-      arraySize = typeToSize[type]*i*j
+      arrType = if struct then genStruct() else genType()
+      arraySize = arrType['size']*i*j
 
     loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
     index = 1
-    code =  """#{type} array[#{i}][#{j}];
+    code = ""
+    if not struct
+      code =  """#{type} array[#{i}][#{j}];
 
-    #{loops[Math.abs(index - 1)]} {
-      #{loops[index]} {
-        array[i][j] = 15;
-      }
-    }"""
+#{loops[Math.abs(index - 1)]} {
+  #{loops[index]} {
+    array[i][j] = 15;
+  }
+}"""
+    else
+      code =  """#{type} array[#{i}][#{j}];
+
+#{loops[Math.abs(index - 1)]} {
+  #{loops[index]} {
+    array[i][j].a = 15;
+    array[i][j].b = 15;
+  }
+}"""
 
     code: code
     s: genS()
     b: b
     E: genE()
 
-  @medium: ->
+  @medium: (struct) ->
     genB = ->
       1 << Math.floor(Math.random()*3 + 3)
     genS = ->
@@ -103,26 +139,37 @@ for (int i = 0; i < #{i}; ++i) {
     i = genSize()
     j = genSize()
 
-    type = genType()
-    arraySize = typeToSize[type]*i*j
+    arrType = if struct then genStruct() else genType()
+    arraySize = arrType['size']*i*j
     b = genB()
 
     while arraySize % b != 0
       i = genSize()
       j = genSize()
       b = genB()
-      type = genType()
-      arraySize = typeToSize[type]*i*j
+      arrType = if struct then genStruct() else genType()
+      arraySize = arrType['size']*i*j
 
     loops = ["for (int i = 0; i < #{i}; ++i)", "for (int j = 0; j < #{j}; ++j)"]
     index = 0
-    code =  """#{type} array[#{i}][#{j}];
+    code = ""
+    if not struct
+      code =  """#{type} array[#{i}][#{j}];
 
-    #{loops[Math.abs(index - 1)]} {
-      #{loops[index]} {
-        array[i][j] = 15;
-      }
-    }"""
+#{loops[Math.abs(index - 1)]} {
+  #{loops[index]} {
+    array[i][j] = 15;
+  }
+}"""
+    else
+      code =  """#{type} array[#{i}][#{j}];
+
+      #{loops[Math.abs(index - 1)]} {
+        #{loops[index]} {
+          array[i][j].a = 15;
+          array[i][j].b = 15;
+        }
+      }"""
 
     code: code
     s: genS()

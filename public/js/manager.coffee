@@ -49,10 +49,15 @@ $ ->
       $ "<select class='selectpicker'
         data-width='auto'
         id='difficulty'>
-          <optgroup label='Problem Difficulty'>
-            <option>Basic</option>
-            <option>Easy</option>
-            <option>Medium</option>
+          <optgroup label='Single Array'>
+            <option value='basic'>Basic</option>
+            <option value='easy'>Easy</option>
+            <option value='medium'>Medium</option>
+          </optgroup>
+          <optgroup label='Single Struct Array'>
+            <option value='structbasic'>Basic</option>
+            <option value='structeasy'>Easy</option>
+            <option value='structmedium'>Medium</option>
           </optgroup>
         </select>"
         .appendTo div1
@@ -62,7 +67,6 @@ $ ->
         .appendTo div1
         .click () =>
           difficulty = $("#difficulty").val().toLowerCase()
-          console.log difficulty
           switch difficulty
             when "basic"
               problem = Generator.basic()
@@ -70,6 +74,12 @@ $ ->
               problem = Generator.easy()
             when "medium"
               problem = Generator.medium()
+            when "structbasic"
+              problem = Generator.basic(true)
+            when "structeasy"
+              problem = Generator.easy(true)
+            when "structmedium"
+              problem = Generator.medium(true)
             else
               console.log "Unsupported type: #{difficulty}"
 

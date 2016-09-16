@@ -17,12 +17,11 @@
         col = $("<div class='col-sm-6'/>").appendTo(logs);
         this.summaryHome = $("<div class='panel panel-default'> <div class='panel-heading'> <h3 class='panel-title'>Simulation Summary</h3> </div> <div class='panel-body log'/> </div>").appendTo(col).find($(".panel-body"));
         $("<label>Generator Difficulty</label><br/>").appendTo(div1);
-        $("<select class='selectpicker' data-width='auto' id='difficulty'> <optgroup label='Problem Difficulty'> <option>Basic</option> <option>Easy</option> <option>Medium</option> </optgroup> </select>").appendTo(div1);
+        $("<select class='selectpicker' data-width='auto' id='difficulty'> <optgroup label='Single Array'> <option value='basic'>Basic</option> <option value='easy'>Easy</option> <option value='medium'>Medium</option> </optgroup> <optgroup label='Single Struct Array'> <option value='structbasic'>Basic</option> <option value='structeasy'>Easy</option> <option value='structmedium'>Medium</option> </optgroup> </select>").appendTo(div1);
         $("<button class='btn btn-primary' id='gen'>").text("Generate Random Problem").appendTo(div1).click((function(_this) {
           return function() {
             var difficulty, problem;
             difficulty = $("#difficulty").val().toLowerCase();
-            console.log(difficulty);
             switch (difficulty) {
               case "basic":
                 problem = Generator.basic();
@@ -32,6 +31,15 @@
                 break;
               case "medium":
                 problem = Generator.medium();
+                break;
+              case "structbasic":
+                problem = Generator.basic(true);
+                break;
+              case "structeasy":
+                problem = Generator.easy(true);
+                break;
+              case "structmedium":
+                problem = Generator.medium(true);
                 break;
               default:
                 console.log("Unsupported type: " + difficulty);
