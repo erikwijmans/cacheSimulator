@@ -101,7 +101,7 @@ int main(int argc, char** argv) {''' \
     subprocess.check_call(shlex.split("g++ -std=gnu++11 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
 
     with open("{}.trace".format(self.fileno), "w") as outfile:
-      subprocess.check_call(shlex.split("env {} {}".format(self.sandbox, self.fileno)), stdout=outfile)
+      subprocess.check_call(shlex.split("{} {}".format(self.sandbox, self.fileno)), stdout=outfile)
 
 
     with open("{}.trace".format(self.fileno)) as file:
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {''' \
       file.close()
 
     with open("{}.err".format(self.fileno), "w") as file:
-      exit = subprocess.call(shlex.split("gcc -fsyntax-only -std=gnu99 -Wall {}.c".format(self.fileno)), stderr=file)
+      exit = subprocess.call(shlex.split("gcc -fsyntax-only -std=gnu99 -Wall -Werror -nostdlib {}.c".format(self.fileno)), stderr=file)
 
     if exit != 0:
       with open("{}.err".format(self.fileno), "r") as file:
