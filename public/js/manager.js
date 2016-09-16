@@ -64,6 +64,7 @@
             code = _this.codeHome.val();
             return getTrace(code, function(res) {
               var error, msg, t;
+              console.log(res);
               error = res['error'];
               msg = res['msg'];
               if (!error) {

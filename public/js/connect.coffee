@@ -1,35 +1,17 @@
 root = exports ? this
 
-code = """
-int main() {
-struct pixel_t{
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-    unsigned char a;
-};
-
-struct pixel_t pixel[16][16];
-register int i, j;
-int x;
-for (i = 0; i < 16; i ++){
-    for (j = 0; j < 16; j ++){
-        x = pixel[j][i].r;
-        pixel[j][i].g = 0;
-        pixel[j][i].b = 0;
-        pixel[j][i].a = 0;
-} }
-}
-  """
+baseURL = "http://ec2-52-10-240-194.us-west-2.compute.amazonaws.com"
+baseURL = ""
 
 ajaxReq = (url, data, cb) ->
   $.ajax
-    dataType: 'json'
-    contentType: 'application/json; charset=UTF-8'
+    dataType: 'text'
+    contentType: 'text/plain'
     type: "POST"
-    url: "http://ec2-52-10-240-194.us-west-2.compute.amazonaws.com#{url}"
+    url: "#{baseURL}#{url}"
     data: data
-    success: cb
+    success: (data) ->
+      cb JSON.parse(data)
     error: (err) ->
       console.log err
 
@@ -46,14 +28,4 @@ root.getSim = getSim = (trace, cacheParams, style, cb) ->
     style: style
   ), cb
 
-
-() ->
-  getTrace code, (res) ->
-    getSim res,
-      s: 3
-      b: 3
-      E: 3
-      memSize: 64
-    , (res) ->
-      console.log res
 

@@ -107,6 +107,7 @@ $ ->
         .click () =>
           code = @codeHome.val()
           getTrace code, (res) =>
+            console.log res
             error = res['error']
             msg = res['msg']
             if not error

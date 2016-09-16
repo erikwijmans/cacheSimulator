@@ -101,7 +101,7 @@ int main(int argc, char** argv) {''' \
     subprocess.check_call(shlex.split("g++ -std=gnu++11 -g -O3 -o {} {}.cpp".format(self.fileno, self.fileno)))
 
     with open("{}.trace".format(self.fileno), "w") as outfile:
-      subprocess.check_call(shlex.split("env {} {}".format(self.sandbox, self.fileno)), stdout=outfile)
+      subprocess.check_call(shlex.split("{} {}".format(self.sandbox, self.fileno)), stdout=outfile)
 
 
     with open("{}.trace".format(self.fileno)) as file:
