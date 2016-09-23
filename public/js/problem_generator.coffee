@@ -103,7 +103,7 @@ for (int i = 0; i < #{i}; ++i) {
     index = 1
     code = ""
     if not struct
-      code =  """#{type} array[#{i}][#{j}];
+      code =  """#{arrType['type']} array[#{i}][#{j}];
 
 #{loops[Math.abs(index - 1)]} {
   #{loops[index]} {
@@ -111,7 +111,7 @@ for (int i = 0; i < #{i}; ++i) {
   }
 }"""
     else
-      code =  """#{type} array[#{i}][#{j}];
+      code =  """#{arrType['type']} array[#{i}][#{j}];
 
 #{loops[Math.abs(index - 1)]} {
   #{loops[index]} {
@@ -154,7 +154,7 @@ for (int i = 0; i < #{i}; ++i) {
     index = 0
     code = ""
     if not struct
-      code =  """#{type} array[#{i}][#{j}];
+      code =  """#{arrType['type']} array[#{i}][#{j}];
 
 #{loops[Math.abs(index - 1)]} {
   #{loops[index]} {
@@ -162,7 +162,7 @@ for (int i = 0; i < #{i}; ++i) {
   }
 }"""
     else
-      code =  """#{type} array[#{i}][#{j}];
+      code =  """#{arrType['type']} array[#{i}][#{j}];
 
       #{loops[Math.abs(index - 1)]} {
         #{loops[index]} {

@@ -66,7 +66,7 @@
               return _this.intervalID = setInterval(function() {
                 var sliderval, time;
                 sliderval = _this.slider.slider("getValue");
-                time = Math.exp(minVal + sliderval * scale);
+                time = Math.exp(maxVal - sliderval * scale);
                 if ((performance.now() - _this.lastTime) > time) {
                   _this.lastTime = performance.now();
                   return _this.next();

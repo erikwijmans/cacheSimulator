@@ -106,9 +106,9 @@
       index = 1;
       code = "";
       if (!struct) {
-        code = type + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}";
+        code = arrType['type'] + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}";
       } else {
-        code = type + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j].a = 15;\n    array[i][j].b = 15;\n  }\n}";
+        code = arrType['type'] + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j].a = 15;\n    array[i][j].b = 15;\n  }\n}";
       }
       return {
         code: code,
@@ -148,9 +148,9 @@
       index = 0;
       code = "";
       if (!struct) {
-        code = type + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}";
+        code = arrType['type'] + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j] = 15;\n  }\n}";
       } else {
-        code = type + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j].a = 15;\n    array[i][j].b = 15;\n  }\n}";
+        code = arrType['type'] + " array[" + i + "][" + j + "];\n\n" + loops[Math.abs(index - 1)] + " {\n  " + loops[index] + " {\n    array[i][j].a = 15;\n    array[i][j].b = 15;\n  }\n}";
       }
       return {
         code: code,

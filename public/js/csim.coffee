@@ -78,7 +78,7 @@ root.CSim = class CSim
           autoFunc = () =>
             @intervalID = setInterval () =>
               sliderval = @slider.slider "getValue"
-              time = Math.exp(minVal + sliderval * scale)
+              time = Math.exp(maxVal - sliderval * scale)
 
               if (performance.now() - @lastTime) > time
                 @lastTime = performance.now()
