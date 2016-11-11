@@ -63,10 +63,14 @@ class CSim:
     }
 
   def simulate(self, line):
+    if len(line) <= 1:
+      return
+
     self.time += 1
 
     address = 0
     valgrind_type = "S"
+
     if self.style == TRACE_TYPE.valgrid.value:
       if line[1] != "L" and line[1] != "M" and line[1] != "S":
         return
